@@ -33,7 +33,7 @@ document.querySelector('#app').innerHTML=`
       <section class="key-card" aria-label="Ideia principal"><span id="lesson-icon" aria-hidden="true"></span><div><h2>Guarde esta ideia</h2><p id="lesson-key"></p></div></section>
       <div id="formula" class="formula"></div>
       <details class="word-guide" hidden><summary>O que significa cada símbolo?</summary><dl id="formula-words"></dl></details>
-      <details class="everyday-detail"><summary>Uma comparação para entender</summary><p id="everyday-example"></p></details>
+      <details class="everyday-detail"><summary>Exemplo para entender</summary><p id="everyday-example"></p></details>
       <details class="science-detail"><summary>Saiba mais sobre o modelo</summary><p id="detail"></p></details>
       <span class="chapter-duration" id="duration"></span>
     </section>
@@ -50,7 +50,16 @@ document.querySelector('#app').innerHTML=`
     <div class="navigation-buttons"><button id="previous" aria-label="Capítulo anterior">← <span>Anterior</span></button><button id="next"><span>Próximo</span> →</button></div>
   </footer>
   <dialog id="chapter-menu"><div class="dialog-heading"><h2>Mapa da exploração</h2><button data-close="chapter-menu" aria-label="Fechar menu">✕</button></div><p>16 capítulos · cerca de 38 minutos com demonstrações</p><div id="chapter-links"></div></dialog>
-  <aside id="presenter-notes" class="notes-panel" hidden><div class="dialog-heading"><h2>Notas do apresentador</h2><button id="close-notes" aria-label="Fechar notas">✕</button></div><p id="notes-text"></p><p id="support-text"></p><small>← → navegar · espaço avançar · F tela cheia · H ocultar interface · N notas. Controles de formulário preservam suas próprias teclas.</small><p id="timer"></p><button id="restart">Reiniciar apresentação</button></aside>
+  <aside id="presenter-notes" class="notes-panel" hidden aria-label="Roteiro oral do capítulo"><div class="dialog-heading"><h2>Notas do apresentador</h2><button id="close-notes" aria-label="Fechar notas">✕</button></div>
+    <p id="notes-chapter" class="notes-chapter"></p>
+    <section class="oral-script"><h3>Para falar à turma</h3><p id="notes-text"></p></section>
+    <p id="support-text" class="notes-takeaway"></p>
+    <details class="presenter-section"><summary>Explicação de apoio</summary><div id="notes-explanation"></div></details>
+    <details class="presenter-section"><summary>Exemplo e aplicação</summary><div id="notes-example"></div></details>
+    <details class="presenter-section"><summary>Como conduzir a demonstração</summary><div id="notes-demonstration"></div></details>
+    <details class="presenter-section"><summary>Precisão científica e limites do modelo</summary><div id="notes-model"></div></details>
+    <section id="notes-caution-section" class="notes-caution" hidden><h3 id="notes-caution-label"></h3><p id="notes-caution"></p></section>
+    <small>← → navegar · espaço avançar · F tela cheia · H ocultar interface · N notas. Controles de formulário preservam suas próprias teclas.</small><p id="timer"></p><button id="restart">Reiniciar apresentação</button></aside>
   <dialog id="settings"><div class="dialog-heading"><h2>Preparar apresentação</h2><button data-close="settings" aria-label="Fechar configurações">✕</button></div>
     <label>Qualidade gráfica<select id="quality"><option value="low">Baixa · economia</option><option value="medium" selected>Média · equilibrada</option><option value="high">Alta · mais partículas</option></select></label>
     <label class="toggle-control"><input id="sound" type="checkbox">Efeitos sonoros opcionais</label>
@@ -65,6 +74,10 @@ const status=message=>{const el=$('#status');el.textContent=message;el.hidden=fa
 const stage=new Stage($('#stage'),q=>$('#quality').value=q,status);
 const plot=new Plot($('#plot'));
 const links=$('#chapter-links');
+function noteParagraphs(selector,text){
+  const root=$(selector);root.replaceChildren();
+  for(const line of text.split('\n').filter(s=>s.trim())){const p=document.createElement('p');p.textContent=line.replace(/^- /,'• ');root.append(p);}
+}
 chapters.forEach((chapter,i)=>{const b=document.createElement('button');b.innerHTML='<span>'+String(i+1).padStart(2,'0')+'</span><strong></strong><small>'+chapter.time+' min</small>';b.querySelector('strong').textContent=chapter.title;b.addEventListener('click',()=>{go(i);$('#chapter-menu').close();$('#menu-button').setAttribute('aria-expanded','false');});links.append(b);});
 function go(n,updateHash=true){
   index=Math.max(0,Math.min(15,n));
@@ -80,7 +93,15 @@ function go(n,updateHash=true){
   $('#model-label').textContent=ch.kind;$('#duration').textContent='Exploração guiada · '+ch.time+' min';$('#formula').replaceChildren();
   if(ch.formula)katex.render(ch.formula,$('#formula'),{throwOnError:false,displayMode:true,output:'htmlAndMathml'});
   $('#formula').hidden=!ch.formula;
-  $('#notes-text').textContent=ch.notes;$('#support-text').textContent='Para explicar à turma: '+lesson.key+' Exemplo: '+lesson.example;
+  $('#notes-chapter').textContent='Capítulo '+(index+1)+' · '+ch.title;
+  $('#notes-text').textContent=ch.notes;$('#support-text').textContent='Ideia para reforçar: '+lesson.key;
+  noteParagraphs('#notes-explanation',ch.explanation);
+  noteParagraphs('#notes-example',ch.example);
+  noteParagraphs('#notes-demonstration',lesson.action+'\n'+ch.demonstrationNotes);
+  noteParagraphs('#notes-model',ch.detail);
+  $('#notes-caution-section').hidden=!ch.caution;$('#notes-caution-label').textContent=ch.cautionLabel;$('#notes-caution').textContent=ch.caution;
+  document.querySelectorAll('.presenter-section').forEach(el=>el.open=false);
+  $('#presenter-notes').scrollTop=0;
   $('#chapter-counter').textContent=String(index+1).padStart(2,'0')+' / 16';
   $('#chapter-short').textContent=ch.title;$('#progress').style.width=((index+1)/16*100)+'%';
   $('#previous').disabled=index===0;$('#next').disabled=index===15;

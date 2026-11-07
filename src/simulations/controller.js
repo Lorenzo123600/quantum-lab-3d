@@ -100,7 +100,7 @@ export function mountExperiment(index, root, { onNavigate, onSound }) {
   if(index===15) {
     button(controls,'Recomeçar exploração',()=>onNavigate(0),true);
     const details=document.createElement('details');const summary=document.createElement('summary');summary.textContent='Referências e leituras';details.append(summary);
-    const ul=document.createElement('ul');for(const [label,url] of references){const li=document.createElement('li');const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener noreferrer';a.textContent=label;li.append(a);ul.append(li);}details.append(ul);controls.append(details);
+    const ul=document.createElement('ul');for(const [label,url] of references){const li=document.createElement('li');if(url){const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener noreferrer';a.textContent=label;li.append(a);}else li.textContent=label;ul.append(li);}details.append(ul);controls.append(details);
     read('As visualizações são modelos; nenhum quadro é apresentado como registro experimental real.');
   }
   return { state, tick(dt) { if(state.electrons){state.electrons.tick(dt);read((state.electrons.total||0).toLocaleString('pt-BR')+' eventos · '+(state.electrons.path?'com informação de caminho · soma incoerente':'sem informação de caminho · interferência')+' · '+state.electrons.pending+' na fila');} }, dispose(){disposed=true;root.replaceChildren();} };

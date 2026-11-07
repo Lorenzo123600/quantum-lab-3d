@@ -6,6 +6,8 @@ Apresentação educacional 3D em português para o 3º ano do Ensino Médio. Dez
 ## Uma apresentação para aprender junto
 Cada capítulo oferece uma explicação curta, um cartão colorido com a ideia principal e uma tarefa para explorar o experimento. As seções expansíveis trazem comparações, explicações dos símbolos das fórmulas e o que observar no resultado. As analogias são identificadas e seus limites são explicitados; os modelos físicos mantêm suas hipóteses e referências. Ciano, violeta, amarelo, rosa e verde dão identidade aos temas, com rótulos que também comunicam as ideias sem depender só da cor.
 
+O conteúdo do material fornecido `quantum_lab_conteudo_codex.md` foi integrado aos 16 capítulos. `chapters.js` reúne explicações, roteiro de fala, exemplos, cuidados e notas de demonstração; `learning.js` mantém as versões curtas em tela. No botão **Notas**, o roteiro oral aparece primeiro, com seções expansíveis para explicação, exemplos, demonstração e limites científicos. Os exemplos calculados incluem Young (2 mm), Planck (3,31 × 10⁻¹⁹ J), Bohr (10,2 eV) e a bola de de Broglie (6,63 × 10⁻³⁴ m). O quiz segue as dez perguntas do material, e as referências incluem Halliday–Resnick–Walker e Hewitt. Fórmulas, parâmetros e motores dos experimentos foram preservados.
+
 ## Executar
 Requer Node.js 22+ e npm.
 ```sh
