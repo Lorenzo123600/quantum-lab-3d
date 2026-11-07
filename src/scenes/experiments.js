@@ -32,7 +32,7 @@ export function buildScene(index,state,quality) {
   function wave(parent,offset=[0,0,0],color=CYAN){
     const positions=new Float32Array(181*3);const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(positions,3));
     const w=new THREE.Line(g,new THREE.LineBasicMaterial({color,transparent:true,opacity:.85}));w.position.set(...offset);parent.add(w);
-    return (t,k=3,amp=.5,envelope=false)=>{for(let i=0;i<181;i++){const x=(i/180-.5)*7;positions[i*3]=x;positions[i*3+1]=Math.sin(x*k-t*3)*amp*(envelope?Math.exp(-x*x/(2*state.sigma*state.sigma)):1);positions[i*3+2]=0;}g.attributes.position.needsUpdate=true;};
+    return (t,k=3,amp=.5,envelope=false)=>{for(let i=0;i<181;i++){const x=(i/180-.5)*7;positions[i*3]=x;positions[i*3+1]=Math.sin(x*k-t*3)*amp*(envelope?Math.exp(-x*x/(4*state.sigma*state.sigma)):1);positions[i*3+2]=0;}g.attributes.position.needsUpdate=true;};
   }
   function apparatus(electrons=false){
     const L=state.L||1.8;

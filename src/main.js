@@ -1,3 +1,8 @@
+import '@fontsource/dm-sans/400.css';
+import '@fontsource/dm-sans/500.css';
+import '@fontsource/dm-sans/700.css';
+import '@fontsource/space-grotesk/500.css';
+import '@fontsource/space-grotesk/600.css';
 import './styles/main.css';
 import 'katex/dist/katex.min.css';
 import katex from 'katex';

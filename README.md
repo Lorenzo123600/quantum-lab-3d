@@ -16,7 +16,7 @@ npm test
 npm run build
 npm run preview
 ```
-O build fica em `dist/`. O caminho relativo configurado no Vite permite hospedar numa subpasta. Bibliotecas e fontes do KaTeX são empacotadas. As fontes tipográficas do Google são opcionais; sem conexão o site usa fontes do sistema. Após instalar e construir, os cálculos e recursos essenciais não dependem de serviços externos.
+O build fica em `dist/`. O caminho relativo configurado no Vite permite hospedar numa subpasta. Bibliotecas, fontes tipográficas e fontes do KaTeX são empacotadas. Não há carregamento de fontes externas em tempo de execução. Após instalar e construir, os cálculos e recursos essenciais não dependem de serviços externos.
 
 ## Apresentar
 - Setas esquerda/direita: capítulos; espaço: avançar.
@@ -92,7 +92,7 @@ npm run test:e2e
 ```
 Playwright usa Chromium desktop e viewport/touch de Galaxy S9+, verificando os 16 capítulos, ausência de erros, overflow, quiz, controles, notas, teclado e informação de caminho. Emulação não substitui teste num aparelho Samsung real.
 
-O ambiente de execução da sessão de criação estava indisponível. Foram realizadas verificações de sintaxe JavaScript e verificações matemáticas em um runtime JavaScript isolado. **Não foram executados localmente npm install, build ou navegador nessa sessão.** O workflow `Validate Quantum Lab` executa os testes, build e Playwright no GitHub Actions e fornece artefatos. Consulte o resultado do workflow antes de apresentar. A checagem visual final em projetor, smartphone físico, tela cheia e restauração real de WebGL continua recomendada.
+O ambiente local da sessão de criação estava indisponível; a execução foi feita pelo GitHub Actions. Na primeira validação, **instalação npm, 8 testes físicos, build de produção e 10 testes de navegador passaram**, cobrindo desktop e celular emulado. A suíte também inclui uma varredura ampliada de sliders, seletores, toggles, câmera e navegação, adicionada na revisão final. O workflow `Validate Quantum Lab` executa todos os testes e fornece o build e capturas de tela como artefatos. Consulte a execução mais recente antes de apresentar. Não houve inspeção visual manual das capturas nessa sessão. A checagem em projetor, smartphone físico, tela cheia e restauração real de WebGL continua pendente.
 
 ## Checklist antes da aula
 Abra o site no computador da apresentação, confirme o workflow verde e teste som (se desejado), tela cheia, câmera e o capítulo 10. Carregue a página antes da aula. Ajuste a qualidade para o equipamento. As cores luminosas e pontos pequenos podem precisar de mais brilho em projetores.

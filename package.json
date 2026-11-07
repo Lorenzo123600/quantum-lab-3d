@@ -12,7 +12,9 @@
   },
   "dependencies": {
     "three": "0.170.0",
-    "katex": "0.16.11"
+    "katex": "0.16.11",
+    "@fontsource/dm-sans": "^5.0.0",
+    "@fontsource/space-grotesk": "^5.0.0"
   },
   "devDependencies": {
     "vite": "6.1.0",
