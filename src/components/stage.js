@@ -5,7 +5,7 @@ import { disposeTree,points } from '../scenes/primitives.js';
 export class Stage {
   constructor(host,onQuality,onStatus) {
     this.host=host;this.onQuality=onQuality;this.onStatus=onStatus;this.quality='medium';this.lost=false;this.reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
-    this.onMotion=e=>this.reduced=e.matches;this.motion=matchMedia('(prefers-reduced-motion: reduce)');this.motion.addEventListener('change',this.onMotion);
+    this.onMotion=e=>this.reduced=e.matches||this.userReduced===true;this.motion=matchMedia('(prefers-reduced-motion: reduce)');this.motion.addEventListener('change',this.onMotion);
     try {this.renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'high-performance'});}catch(e){onStatus('WebGL indisponível. Os textos, controles e gráficos continuam disponíveis.');return;}
     this.renderer.setClearColor(0x000000,0);this.renderer.outputColorSpace=THREE.SRGBColorSpace;host.prepend(this.renderer.domElement);
     this.renderer.domElement.setAttribute('aria-label','Cena tridimensional. Arraste para girar e use pinça ou rolagem para aproximar.');

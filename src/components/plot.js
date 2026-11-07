@@ -23,10 +23,10 @@ export class Plot {
       }
       ctx.fillText('−12 mm',left,h-7);ctx.fillText('posição na tela',w/2-35,h-7);ctx.fillText('+12 mm',right-40,h-7);
     }else if(index===10){
-      curve(x=>Math.exp(-x*x/(2*s.sigma*s.sigma)),'#68e5e8',-4,4);
-      curve(x=>Math.exp(-x*x*s.sigma*s.sigma*2),'#af8dff',-4,4);
-      ctx.fillText('Ciano: posição (nm) · violeta: momento (ℏ/nm) · eixos sobrepostos',left,13);
-      ctx.fillText('−4',left,h-7);ctx.fillText('0',w/2,h-7);ctx.fillText('+4',right-15,h-7);
+      ctx.clearRect(0,0,w,h);
+      const panel=(offset,width,label,fn,extent)=>{const l=offset+20,r=offset+width-12,t=36,b=h-27;ctx.strokeStyle='#61758c';ctx.beginPath();ctx.moveTo(l,t);ctx.lineTo(l,b);ctx.lineTo(r,b);ctx.stroke();ctx.fillStyle='#dce9ff';ctx.font='10px system-ui';ctx.fillText(label,l,13);ctx.fillText('Pico = 1 (escala própria)',l,27);ctx.strokeStyle=offset?'#ce9aff':'#68e5e8';ctx.beginPath();for(let i=0;i<=200;i++){const x=-extent+2*extent*i/200,y=fn(x),px=l+i/200*(r-l),py=b-y*(b-t);i?ctx.lineTo(px,py):ctx.moveTo(px,py);}ctx.stroke();ctx.fillText('−'+extent,l,h-9);ctx.fillText('0',(l+r)/2,h-9);ctx.fillText('+'+extent,r-20,h-9);};
+      panel(0,w/2,'Posição (nm)',x=>Math.exp(-x*x/(2*s.sigma*s.sigma)),4);
+      panel(w/2,w/2,'Momento (ℏ/nm)',q=>Math.exp(-2*q*q*s.sigma*s.sigma),4);
     }else if(index===8){
       const lambda=H/Math.sqrt(2*ME*E_CHARGE*s.voltage);
       curve(x=>braggIntensity(x*Math.PI/180,lambda),'#68e5e8',5,85);

@@ -13,13 +13,13 @@ async function probe(page){await page.addInitScript(()=>{
 async function openAudio(page){await page.locator('#audio-button').click();await expect(page.locator('#audio-panel')).toBeVisible();}
 async function waitRunning(page){await expect.poll(()=>page.evaluate(()=>window.audioProbe.contexts[0]?.state)).toBe('running');}
 
-test('enabled 100% defaults still require a gesture and preserve independent saved controls',async({page},testInfo)=>{
+test('silent classroom defaults preserve independent saved controls',async({page},testInfo)=>{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));await probe(page);await page.goto('/#capitulo-4');
  expect(await page.evaluate(()=>window.audioProbe.contexts.length)).toBe(0);await openAudio(page);
- await expect(page.locator('#audio-music')).toBeChecked();await expect(page.locator('#audio-effects')).toBeChecked();await expect(page.locator('#audio-music-volume')).toHaveValue('100');await expect(page.locator('#audio-effects-volume')).toHaveValue('100');await expect(page.locator('#audio-button')).toHaveAttribute('data-muted','false');
+ await expect(page.locator('#audio-music')).not.toBeChecked();await expect(page.locator('#audio-effects')).not.toBeChecked();await expect(page.locator('#audio-music-volume')).toHaveValue('100');await expect(page.locator('#audio-effects-volume')).toHaveValue('100');await expect(page.locator('#audio-button')).toHaveAttribute('data-muted','true');
  await page.screenshot({path:testInfo.outputPath('audio-panel.png')});
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBeTruthy();
- await page.locator('#audio-effects').uncheck();await waitRunning(page);await expect(page.locator('#audio-music')).toBeChecked();await expect(page.locator('#audio-effects')).not.toBeChecked();
+ await page.locator('#audio-music').check();await waitRunning(page);await expect(page.locator('#audio-music')).toBeChecked();await expect(page.locator('#audio-effects')).not.toBeChecked();
  await page.locator('#audio-music-volume').fill('24');await expect(page.locator('#music-volume-label')).toHaveText('24%');
  await page.locator('#audio-effects').check();await page.locator('#audio-effects-volume').fill('18');
  expect(await page.evaluate(()=>window.audioProbe.contexts.length)).toBe(1);

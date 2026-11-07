@@ -36,7 +36,7 @@ export class MaximumCelebration {
  }
  animateParticles(){
   const root=this.dialog.querySelector('.award-particles');root.replaceChildren();clearTimeout(this.particleTimer);
-  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches||document.body.classList.contains('reduced-animation'))return;
   const count=innerWidth<760?28:48,colors=['#64d9ff','#ffd16b','#b99aff','#9fe37d'];
   for(let i=0;i<count;i++){const p=document.createElement('span');p.className='award-particle '+(i%4===0?'particle-star':i%4===1?'particle-electron':'particle-confetti');p.textContent=i%4===0?'✦':i%7===0?'⚛':'';p.style.setProperty('--particle-color',colors[i%4]);p.style.setProperty('--particle-x',((Math.random()-.5)*Math.min(innerWidth,1000))+'px');p.style.setProperty('--particle-y',(-100-Math.random()*270)+'px');p.style.setProperty('--particle-turn',(Math.random()*620-310)+'deg');p.style.setProperty('--particle-delay',(Math.random()*.25)+'s');root.append(p);}
   this.particleTimer=setTimeout(()=>root.replaceChildren(),2300);

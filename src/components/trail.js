@@ -1,3 +1,4 @@
+import {assignments,presenters} from '../content/presenter-assignments.js';
 import { icon, lessonIcons } from './icons.js';
 import { badges } from '../utils/progress.js';
 import { physicsEmblem } from './brand.js';
@@ -14,7 +15,7 @@ export class LearningTrail {
     chapters.forEach((chapter,i)=>{
       const b=document.createElement('button');b.type='button';b.className='path-item';b.dataset.theme=learning[i].theme;b.style.setProperty('--node-offset',Math.round(Math.sin(i*Math.PI/2)*44)+'px');
       b.innerHTML='<span class="path-orb">'+icon(lessonIcons[i])+'</span><span class="path-copy"><small>LIÇÃO '+String(i+1).padStart(2,'0')+'</small><strong></strong><span class="path-state"></span></span><span class="path-marker" aria-hidden="true"></span>';
-      b.querySelector('strong').textContent=chapter.title;
+      b.querySelector('strong').textContent=chapter.title;const owner=document.createElement('span');owner.className='path-owner';owner.textContent='🎤 '+assignments[i];owner.style.setProperty('--owner-color',presenters[assignments[i]]);b.querySelector('.path-copy').append(owner);
       b.addEventListener('click',()=>onSelect(i));root.append(b);this.buttons.push(b);
     });
   }

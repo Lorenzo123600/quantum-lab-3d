@@ -1,5 +1,5 @@
 export const AUDIO_KEY='lorenzos-physics-audio-v1';
-export const AUDIO_DEFAULTS=Object.freeze({music:true,effects:true,musicVolume:1,effectsVolume:1});
+export const AUDIO_DEFAULTS=Object.freeze({music:false,effects:false,musicVolume:1,effectsVolume:1});
 const volume=(value,fallback)=>typeof value==='number'&&Number.isFinite(value)?Math.max(0,Math.min(1,value)):fallback;
 export function readAudioPreferences(storage){
  try{const data=JSON.parse(storage?.getItem(AUDIO_KEY)||'null');if(data?.version===1)return {music: data.music===true,effects:data.effects===true,musicVolume:volume(data.musicVolume,AUDIO_DEFAULTS.musicVolume),effectsVolume:volume(data.effectsVolume,AUDIO_DEFAULTS.effectsVolume)};}catch{}

@@ -7,7 +7,7 @@ function fakeContext(){
  const node=()=>({gain:parameter(),frequency:parameter(),Q:parameter(),threshold:parameter(),knee:parameter(),ratio:parameter(),attack:parameter(),release:parameter(),connect(){},disconnect(){}});
  const c={state:'suspended',currentTime:10,destination:node(),oscillators:[],resumeCalls:0,suspendCalls:0,createGain:node,createBiquadFilter:node,createDynamicsCompressor:node,createOscillator(){const osc={...node(),start(t){this.started=t;},stop(t){this.stopped=t;}};this.oscillators.push(osc);return osc;},async resume(){this.resumeCalls++;this.state='running';},async suspend(){this.suspendCalls++;this.state='suspended';},async close(){this.state='closed';}};return c;
 }
-test('new visitors default to enabled music and effects at 100% and preferences are validated independently',()=>{
+test('new classroom visitors default to silent audio with independently adjustable volumes and preferences are validated independently',()=>{
  const storage=memory();assert.deepEqual(readAudioPreferences(storage),AUDIO_DEFAULTS);
  storage.setItem(AUDIO_KEY,JSON.stringify({version:1,music:true,effects:'true',musicVolume:20,effectsVolume:-1}));assert.deepEqual(readAudioPreferences(storage),{music:true,effects:false,musicVolume:1,effectsVolume:0});
  storage.setItem(AUDIO_KEY,'broken');assert.deepEqual(readAudioPreferences(storage),AUDIO_DEFAULTS);
