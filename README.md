@@ -134,7 +134,7 @@ As 16 lições continuam valendo 20 XP cada. Somente as 16 conclusões únicas r
 
 ### Identidade sonora original (Web Audio API)
 
-O botão de alto-falante no cabeçalho abre controles independentes de música, efeitos e seus volumes. **Música e efeitos vêm desligados** para novos visitantes, conforme a configuração de sala de aula da versão 4.0. Os volumes continuam ajustáveis independentemente. O som começa somente após uma interação, conforme as regras dos navegadores. Preferências já salvas, inclusive áudio desligado ou volumes menores, são preservadas. Preferências locais usam `lorenzos-physics-audio-v1`. Preferências já ativadas só voltam a tocar depois de uma nova interação no navegador, nunca no carregamento.
+O botão de alto-falante no cabeçalho abre controles independentes de música, efeitos e seus volumes. **Música e efeitos vêm ligados** para novos visitantes, conforme a solicitação posterior à versão 4.0. O som só começa após um clique, toque ou interação de teclado. Os volumes continuam ajustáveis independentemente. O som começa somente após uma interação, conforme as regras dos navegadores. Preferências já salvas, inclusive áudio desligado ou volumes menores, são preservadas. Preferências locais usam `lorenzos-physics-audio-v1`. Preferências já ativadas só voltam a tocar depois de uma nova interação no navegador, nunca no carregamento.
 
 Toda a trilha e todos os efeitos são composições instrumentais originais sintetizadas pelo projeto, sem samples, músicas comerciais, arquivos de terceiros ou licenças externas. A trilha usa quatro compassos de oito segundos (Cmaj7, Am7, Fmaj7, Gsus2), com acordes suaves e notas cristalinas sobrepostas. Ataques e caudas graduais permitem repetição sem cortes. O gerenciador central mantém um único contexto e um único agendador, limita vozes simultâneas, libera os nós finalizados e pausa ao ocultar a página. Não há sons em sliders, movimentos da câmera ou emissões contínuas.
 
@@ -168,6 +168,8 @@ As animações e a qualidade adaptativa do Stage continuam em uso, sem renderiza
 
 ### Se o áudio ficar sem som no celular
 
-Abra o botão 🔊 e use **Ativar música e efeitos**. Esse botão ativa os dois canais e libera o contexto no próprio clique/toque, mantendo os volumes escolhidos (um volume em zero volta a 100% nessa ação explícita). **Testar som** toca uma sequência curta quando os efeitos estão habilitados. Em caso de silêncio, confira o volume de mídia e a saída de áudio/Bluetooth do aparelho. Os controles individuais continuam disponíveis e o padrão de sala de aula continua desligado.
+Abra o botão 🔊 e use **Ativar música e efeitos**. Esse botão ativa os dois canais e libera o contexto no próprio clique/toque, mantendo os volumes escolhidos (um volume em zero volta a 100% nessa ação explícita). **Testar som** toca uma sequência curta quando os efeitos estão habilitados. Em caso de silêncio, confira o volume de mídia e a saída de áudio/Bluetooth do aparelho. Os controles individuais continuam disponíveis e o padrão atual é ligado, com reprodução somente após interação.
 
 O desbloqueio usa `click`, `touchend` e teclado, em vez de depender do início do toque. Um `resume()` pendente pode ser repetido durante um novo gesto sem criar outro contexto ou outra trilha. O botão de retomar permite tentar novamente após falhas transitórias. Testes incluem esse bloqueio simulado e medição de sinal no grafo Web Audio real.
+
+A configuração de áudio migra uma única vez as preferências antigas (version 1) para ambos os canais ativos. Volumes positivos são preservados; volumes em zero passam a 100% nessa migração. Novas escolhas explícitas, inclusive desligar, usam version 2 e permanecem salvas. Essa migração não acessa nem altera progresso, XP, conquistas ou anotações.

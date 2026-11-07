@@ -1,8 +1,13 @@
 export const AUDIO_KEY='lorenzos-physics-audio-v1';
-export const AUDIO_DEFAULTS=Object.freeze({music:false,effects:false,musicVolume:1,effectsVolume:1});
+export const AUDIO_DEFAULTS=Object.freeze({music:true,effects:true,musicVolume:1,effectsVolume:1});
 const volume=(value,fallback)=>typeof value==='number'&&Number.isFinite(value)?Math.max(0,Math.min(1,value)):fallback;
 export function readAudioPreferences(storage){
- try{const data=JSON.parse(storage?.getItem(AUDIO_KEY)||'null');if(data?.version===1)return {music: data.music===true,effects:data.effects===true,musicVolume:volume(data.musicVolume,AUDIO_DEFAULTS.musicVolume),effectsVolume:volume(data.effectsVolume,AUDIO_DEFAULTS.effectsVolume)};}catch{}
+ try{const data=JSON.parse(storage?.getItem(AUDIO_KEY)||'null');
+  if(data?.version===2)return {music:data.music===true,effects:data.effects===true,musicVolume:volume(data.musicVolume,1),effectsVolume:volume(data.effectsVolume,1)};
+  // One-time adoption of the requested active default. Further explicit mute
+  // choices are version 2 and remain respected on every subsequent visit.
+  if(data?.version===1){const migrated={music:true,effects:true,musicVolume:volume(data.musicVolume,1)||1,effectsVolume:volume(data.effectsVolume,1)||1};try{storage?.setItem(AUDIO_KEY,JSON.stringify({version:2,...migrated}));}catch{}return migrated;}
+ }catch{}
  return {...AUDIO_DEFAULTS};
 }
 // Original score: four eight-second bars in C major. Overlapping envelopes join
@@ -30,7 +35,7 @@ export class AudioManager {
  setPreference(key,value){
   if(!Object.hasOwn(AUDIO_DEFAULTS,key))return;
   this.preferences[key]=key.endsWith('Volume')?volume(value,AUDIO_DEFAULTS[key]):value===true;
-  try{this.storage?.setItem(AUDIO_KEY,JSON.stringify({version:1,...this.preferences}));}catch{}
+  try{this.storage?.setItem(AUDIO_KEY,JSON.stringify({version:2,...this.preferences}));}catch{}
   this.applyVolumes();if(!this.preferences.music||this.preferences.musicVolume===0)this.stopMusic();if(!this.preferences.effects||this.preferences.effectsVolume===0)this.stopEffects();
   if(!this.audible){this.suspend();}else if(this.interacted)this.activate();
   this.notify();

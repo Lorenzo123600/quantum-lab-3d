@@ -7,9 +7,9 @@ function fakeContext(){
  const node=()=>({gain:parameter(),frequency:parameter(),Q:parameter(),threshold:parameter(),knee:parameter(),ratio:parameter(),attack:parameter(),release:parameter(),connect(){},disconnect(){}});
  const c={state:'suspended',currentTime:10,destination:node(),oscillators:[],resumeCalls:0,suspendCalls:0,createGain:node,createBiquadFilter:node,createDynamicsCompressor:node,createOscillator(){const osc={...node(),start(t){this.started=t;},stop(t){this.stopped=t;}};this.oscillators.push(osc);return osc;},async resume(){this.resumeCalls++;this.state='running';},async suspend(){this.suspendCalls++;this.state='suspended';},async close(){this.state='closed';}};return c;
 }
-test('new classroom visitors default to silent audio with independently adjustable volumes and preferences are validated independently',()=>{
+test('new visitors default to active audio with independently adjustable volumes and preferences are validated independently',()=>{
  const storage=memory();assert.deepEqual(readAudioPreferences(storage),AUDIO_DEFAULTS);
- storage.setItem(AUDIO_KEY,JSON.stringify({version:1,music:true,effects:'true',musicVolume:20,effectsVolume:-1}));assert.deepEqual(readAudioPreferences(storage),{music:true,effects:false,musicVolume:1,effectsVolume:0});
+ storage.setItem(AUDIO_KEY,JSON.stringify({version:2,music:true,effects:'true',musicVolume:20,effectsVolume:-1}));assert.deepEqual(readAudioPreferences(storage),{music:true,effects:false,musicVolume:1,effectsVolume:0});
  storage.setItem(AUDIO_KEY,'broken');assert.deepEqual(readAudioPreferences(storage),AUDIO_DEFAULTS);
 });
 test('saved opt-in never creates an audio context before interaction; repeated gestures keep one soundtrack',async()=>{
@@ -45,4 +45,11 @@ test('a pending early resume can be retried inside a later gesture without dupli
  let created=0;const audio=new AudioManager({contextFactory:()=>{created++;return context;}});audio.setPreference('music',true);
  const early=audio.interact();assert.equal(context.state,'suspended');assert.equal(context.resumeCalls,1);
  const later=audio.interact();assert.equal(context.resumeCalls,2);assert.equal(await early,true);assert.equal(await later,true);assert.equal(created,1);assert.ok(audio.musicTimer);assert.equal(audio.voices.size,7);audio.dispose();
+});
+
+
+test('old silent preferences adopt active defaults once; new mute choices remain persistent',()=>{
+ const storage=memory();storage.setItem(AUDIO_KEY,JSON.stringify({version:1,music:false,effects:false,musicVolume:0,effectsVolume:0}));
+ assert.deepEqual(readAudioPreferences(storage),{music:true,effects:true,musicVolume:1,effectsVolume:1});assert.equal(JSON.parse(storage.getItem(AUDIO_KEY)).version,2);
+ const audio=new AudioManager({storage});audio.setPreference('music',false);audio.setPreference('effects',false);const restored=readAudioPreferences(storage);assert.equal(restored.music,false);assert.equal(restored.effects,false);audio.dispose();
 });

@@ -14,13 +14,13 @@ async function probe(page){await page.addInitScript(()=>{
 async function openAudio(page){await page.locator('#audio-button').click();await expect(page.locator('#audio-panel')).toBeVisible();}
 async function waitRunning(page){await expect.poll(()=>page.evaluate(()=>window.audioProbe.contexts[0]?.state)).toBe('running');}
 
-test('silent classroom defaults preserve independent saved controls',async({page},testInfo)=>{
+test('active defaults wait for a gesture and preserve independent saved controls',async({page},testInfo)=>{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));await probe(page);await page.goto('/#capitulo-4');
  expect(await page.evaluate(()=>window.audioProbe.contexts.length)).toBe(0);await openAudio(page);
- await expect(page.locator('#audio-music')).not.toBeChecked();await expect(page.locator('#audio-effects')).not.toBeChecked();await expect(page.locator('#audio-music-volume')).toHaveValue('100');await expect(page.locator('#audio-effects-volume')).toHaveValue('100');await expect(page.locator('#audio-button')).toHaveAttribute('data-muted','true');
+ await expect(page.locator('#audio-music')).toBeChecked();await expect(page.locator('#audio-effects')).toBeChecked();await expect(page.locator('#audio-music-volume')).toHaveValue('100');await expect(page.locator('#audio-effects-volume')).toHaveValue('100');await expect(page.locator('#audio-button')).toHaveAttribute('data-muted','false');
  await page.screenshot({path:testInfo.outputPath('audio-panel.png')});
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBeTruthy();
- await page.locator('#audio-music').check();await waitRunning(page);await expect(page.locator('#audio-music')).toBeChecked();await expect(page.locator('#audio-effects')).not.toBeChecked();
+ await page.locator('#audio-effects').uncheck();await waitRunning(page);await expect(page.locator('#audio-music')).toBeChecked();await expect(page.locator('#audio-effects')).not.toBeChecked();
  await page.locator('#audio-music-volume').fill('24');await expect(page.locator('#music-volume-label')).toHaveText('24%');
  await page.locator('#audio-effects').check();await page.locator('#audio-effects-volume').fill('18');
  expect(await page.evaluate(()=>window.audioProbe.contexts.length)).toBe(1);
@@ -103,4 +103,11 @@ test('explicit activation produces a real output signal for music and effects, i
  await expect.poll(rms,{timeout:5000}).toBeLessThan(.00001);
  await page.locator('#audio-test').click();await expect.poll(rms).toBeGreaterThan(.00005);await expect(page.locator('#audio-status')).toContainText('Teste reproduzido');
  expect(await page.evaluate(()=>window.audioProbe.contexts.length)).toBe(1);
+});
+
+test('previous silent preferences activate once; a new explicit mute remains saved',async({page})=>{
+ await probe(page);await page.addInitScript(()=>{if(!sessionStorage.getItem('audio-migration-seeded')){localStorage.setItem('lorenzos-physics-audio-v1',JSON.stringify({version:1,music:false,effects:false,musicVolume:0,effectsVolume:0}));sessionStorage.setItem('audio-migration-seeded','yes');}});
+ await page.goto('/#capitulo-1');await expect(page.locator('#chapter-title')).toBeVisible();expect(await page.evaluate(()=>window.audioProbe.contexts.length)).toBe(0);
+ await openAudio(page);await waitRunning(page);await expect(page.locator('#audio-music')).toBeChecked();await expect(page.locator('#audio-effects')).toBeChecked();await expect(page.locator('#audio-music-volume')).toHaveValue('100');
+ await page.locator('#audio-music').uncheck();await page.locator('#audio-effects').uncheck();await page.reload();await openAudio(page);await expect(page.locator('#audio-music')).not.toBeChecked();await expect(page.locator('#audio-effects')).not.toBeChecked();expect(await page.evaluate(()=>window.audioProbe.contexts.length)).toBe(0);
 });
