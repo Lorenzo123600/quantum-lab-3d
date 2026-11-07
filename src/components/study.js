@@ -20,7 +20,9 @@ export function mountStudy(root,index,progress,onStudied){
   for(const line of lesson.solved||[])paragraphs(math,line);
  }
  paragraphs(section(outer,'Resumo do capítulo','conclusion'),lesson.conclusion);
- const refs=section(outer,'Fontes e leituras','references');const ul=document.createElement('ul');for(const [text,url]of lesson.references){const li=document.createElement('li');if(url){const a=document.createElement('a');a.textContent=text;a.href=url;a.target='_blank';a.rel='noopener noreferrer';li.append(a);}else li.textContent=text;ul.append(li);}refs.append(ul);
+ const refs=section(outer,'Fontes e leituras','references');
+ if(index===15)paragraphs(refs,'Consulte a lista completa em “Referências e leituras”, no laboratório deste capítulo. Ela reúne os livros e artigos usados na apresentação.');
+ else {const ul=document.createElement('ul');for(const [text,url]of lesson.references){const li=document.createElement('li');if(url){const a=document.createElement('a');a.textContent=text;a.href=url;a.target='_blank';a.rel='noopener noreferrer';li.append(a);}else li.textContent=text;ul.append(li);}refs.append(ul);}
  const finish=document.createElement('div');finish.className='reading-finish';const b=document.createElement('button');b.id='mark-studied';b.textContent=progress.studied.has(index)?'✓ Capítulo marcado como estudado':'Marcar como estudado';b.disabled=progress.studied.has(index);finish.append(b);const note=document.createElement('small');note.textContent='Uma marcação pessoal de leitura, sem pontos extras ou medição de tempo.';finish.append(note);outer.append(finish);
  b.addEventListener('click',()=>{onStudied(index);b.disabled=true;b.textContent='✓ Capítulo marcado como estudado';});
 }

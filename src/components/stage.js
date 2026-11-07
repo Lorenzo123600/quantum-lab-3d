@@ -37,7 +37,7 @@ export class Stage {
     const raw=(now-this.last)/1000;this.last=now;if(document.hidden||this.lost||this.suspended)return;
     const dt=Math.min(raw,.05);
     this.onTick?.(dt);
-    if(this.current)this.current.update(this.reduced||this.animationsPaused?0:dt);
+    if(this.current&&!this.animationsPaused)this.current.update(this.reduced?0:dt);
     if(this.index===0&&!this.interacted&&!this.reduced&&!this.animationsPaused){this.camera.position.multiplyScalar(Math.max(.9995,1-dt*.007));if(this.camera.position.length()<7)this.interacted=true;}
     this.controls.update();this.renderer.render(this.scene,this.camera);
     // Adaptive quality only after enough active frames; never use background-tab delays.
