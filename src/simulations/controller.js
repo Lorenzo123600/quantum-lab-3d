@@ -40,7 +40,7 @@ export function mountExperiment(index, root, { onNavigate, onSound, onComplete =
       const next=+v;
       if(next===state.level)return;
       state.transition=transition(state.level,next);state.transitionAt=performance.now();state.previous=state.level;state.level=next;
-      read(state.transition.type.toUpperCase()+' · |ΔE| = '+Math.abs(state.transition.delta).toFixed(3)+' eV · λ = '+(state.transition.wavelength*1e9).toFixed(1)+' nm');onSound(480+next*90);
+      read(state.transition.type.toUpperCase()+' · |ΔE| = '+Math.abs(state.transition.delta).toFixed(3)+' eV · λ = '+(state.transition.wavelength*1e9).toFixed(1)+' nm');onSound('transition');
     });
   }
   if (index === 7) {
@@ -95,7 +95,7 @@ export function mountExperiment(index, root, { onNavigate, onSound, onComplete =
         [...answers.children].forEach((el,j)=>{el.disabled=true;el.setAttribute('aria-pressed',String(j===i));el.classList.toggle('selected',j===i);el.classList.toggle('correct',j===q[2]);if(j===i&&!correct)el.classList.add('incorrect');});
         read((correct?'Correto! ':'Resposta correta: '+q[1][q[2]]+'. ')+q[3]);
         button(controls,quizIndex===9?'Ver resultado →':'Próxima pergunta →',()=>{quizIndex++;showQuiz();},true);
-        onSound(correct?720:220);
+        onSound(correct?'correct':'incorrect');
         mascotFeedback(correct?'happy':'curious',correct?'Boa! Você conectou a ideia ao fenômeno.':'Vamos analisar o resultado. A explicação ajuda a encontrar a resposta.');
       }));
       [...answers.children].forEach((b,i)=>{b.dataset.letter='ABCD'[i];b.setAttribute('aria-pressed','false');});

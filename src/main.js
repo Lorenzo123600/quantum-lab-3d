@@ -16,7 +16,9 @@ import { learning } from './content/learning.js';
 import { Stage } from './components/stage.js';
 import { Plot } from './components/plot.js';
 import { mountExperiment } from './simulations/controller.js';
-import { AudioEffects } from './utils/audio.js';
+import { AudioManager } from './utils/audio.js';
+import { AudioPanel } from './components/audio-panel.js';
+import './styles/audio.css';
 import { LearningProgress } from './utils/progress.js';
 import { LearningTrail } from './components/trail.js';
 import { mountReview } from './components/review.js';
@@ -38,6 +40,7 @@ document.querySelector('#app').innerHTML=`
       <button id="menu-button" aria-label="Abrir trilha de capítulos" aria-expanded="false" aria-controls="chapter-menu">${icon('trail')} <span>Trilha</span></button>
       <button id="notes-button" aria-label="Notas do apresentador" aria-expanded="false" aria-controls="presenter-notes">${icon('book')} <span>Apresentador</span></button>
       <button id="fullscreen" aria-label="Alternar tela cheia">${icon('fullscreen')}</button>
+      <button id="audio-button" aria-label="Áudio desativado. Ativar música ou efeitos" title="Áudio opcional: ative aqui" aria-expanded="false" aria-controls="audio-panel" data-muted="true">${icon('speaker')}<i class="audio-muted-mark" aria-hidden="true"></i></button>
       <button id="settings-button" aria-expanded="false" aria-controls="settings" aria-label="Configurações">${icon('gear')}</button>
     </nav>
   </header>
@@ -100,21 +103,23 @@ document.querySelector('#app').innerHTML=`
   <div id="status" role="status" class="toast" hidden></div>
 `;
 const $=s=>document.querySelector(s);
-const audio=new AudioEffects();let celebration,experiment,investigation,index=0,started=performance.now(),lastPlot=0,fallbackFrame;
+let celebration,experiment,investigation,index=0,started=performance.now(),lastPlot=0,fallbackFrame;
 const status=message=>{const el=$('#status');el.textContent=message;el.hidden=false;clearTimeout(status.timeout);status.timeout=setTimeout(()=>el.hidden=true,6000);};
 let storage;try{storage=window.localStorage;}catch{}
+const audio=new AudioManager({storage});
 const progress=new LearningProgress(storage,change=>{
   updateProgress();
   if(change.reset){status('Progresso reiniciado. As lições continuam abertas.');return;}
   if(change.reading){status('Capítulo marcado como estudado.');mascotFeedback('happy','Leitura registrada! Agora compare a teoria com o experimento.');return;}
-  if(change.challenge){status('✓ Investigação concluída com evidências verificadas.');return;}
+  if(change.challenge){status('✓ Investigação concluída com evidências verificadas.');audio.effect('complete');return;}
   status('✓ Lição concluída! +20 XP simbólicos.'+(change.newBadge?' Conquista: '+change.newBadge.name+'.':'')+(!change.saved?' O navegador não permitiu salvar; o progresso vale nesta sessão.':''));
-  audio.play(760);
+  if(progress.xp<320)audio.effect(change.newBadge?'achievement':'complete');
   mascotFeedback('celebrate','Você concluiu uma lição! Relembre a ideia principal antes de seguir.');
   celebration?.sync({automatic:true});
 });
 const mascot=new QuantumMascot($('#quantico'),storage);$('#mascot-enabled').checked=mascot.enabled;
 const stage=new Stage($('#stage'),q=>$('#quality').value=q,status);
+const audioPanel=new AudioPanel(audio,{onVisibility:open=>{stage.suspended=open||Boolean(document.querySelector('dialog[open]'));}});
 const school=new SchoolPresentation($('#school-screen'),{
   onStart:()=>go(0),onOpening:()=>showSchool('opening'),
   onChapters:()=>$('#menu-button').click(),onExperiments:()=>{go(3);$('#laboratory').scrollIntoView({block:'start'});},
@@ -122,7 +127,7 @@ const school=new SchoolPresentation($('#school-screen'),{
 });
 const plot=new Plot($('#plot'));
 const trail=new LearningTrail($('#chapter-links'),chapters,learning,progress,i=>{go(i);$('#chapter-menu').close();});
-celebration=new MaximumCelebration({progress,storage,stage,mascotEnabled:()=>mascot.enabled,onVisibility:open=>{stage.suspended=open||Boolean(document.querySelector('dialog[open]'));},returnFocus:()=>{(school.active?$('#school-title'):$('#chapter-title')).focus({preventScroll:true});}});
+celebration=new MaximumCelebration({progress,storage,stage,onCelebrate:()=>audio.celebrate(),mascotEnabled:()=>mascot.enabled,onVisibility:open=>{stage.suspended=open||Boolean(document.querySelector('dialog[open]'));},returnFocus:()=>{(school.active?$('#school-title'):$('#chapter-title')).focus({preventScroll:true});}});
 $('#achievements-button').addEventListener('click',()=>{if(celebration.unlock.unlocked)celebration.open();else{$('#menu-button').click();$('.trail-achievements').open=true;}});
 $('#maximum-achievement').addEventListener('click',()=>celebration.open());
 function updateProgress(){
@@ -172,9 +177,9 @@ function go(n,updateHash=true){
   mountReview($('#lesson-review'),index,progress,i=>progress.complete(i));
   mountStudy($('#study-content'),index,progress,i=>progress.markStudied(i));
   $('#learning-summary').hidden=index!==15;
-  experiment=mountExperiment(index,$('#experiment'),{onNavigate:go,onSound:f=>audio.play(f),onComplete:()=>progress.complete(index)});
+  experiment=mountExperiment(index,$('#experiment'),{onNavigate:go,onSound:name=>audio.effect(name),onComplete:()=>progress.complete(index)});
   investigation=mountInvestigation($('#investigation'),index,()=>experiment.state,progress,i=>progress.completeChallenge(i));
-  stage.setChapter(index,experiment.state);plot.render(index,experiment.state);
+  stage.setChapter(index,experiment.state);plot.render(index,experiment.state);audio.effect('simulation');
   document.body.dataset.chapter=index;document.title=ch.title+' · '+schoolWork.title;
   $('.chapter-copy').classList.remove('enter');requestAnimationFrame(()=>$('.chapter-copy').classList.add('enter'));
   if(updateHash)history.replaceState(null,'','#capitulo-'+(index+1));
@@ -232,7 +237,7 @@ $('#notes-button').addEventListener('click',notes);$('#close-notes').addEventLis
 function hideUI(){const hidden=document.body.classList.toggle('immersive');$('#restore-ui').hidden=!hidden;if($('#settings').open)$('#settings').close();}
 $('#hide-ui').addEventListener('click',hideUI);$('#restore-ui').addEventListener('click',hideUI);
 $('#quality').addEventListener('change',e=>stage.setQuality(e.target.value));
-$('#sound').addEventListener('change',e=>{try{audio.setEnabled(e.target.checked);audio.play();}catch{e.target.checked=false;status('Áudio indisponível neste navegador.');}});
+$('#sound').addEventListener('change',e=>{audio.setPreference('effects',e.target.checked);if(e.target.checked)audio.effect('click');});
 $('#restart').addEventListener('click',()=>{started=performance.now();showSchool('opening');});
 $('#clear-progress').addEventListener('click',()=>{progress.clear();mountReview($('#lesson-review'),index,progress,i=>progress.complete(i));mountStudy($('#study-content'),index,progress,i=>progress.markStudied(i));investigation=mountInvestigation($('#investigation'),index,()=>experiment.state,progress,i=>progress.completeChallenge(i));});
 $('#resume-lesson').addEventListener('click',()=>{go(progress.lastChapter);$('#chapter-menu').close();});
@@ -253,4 +258,4 @@ function fromHash(){const match=location.hash.match(/^#capitulo-(\d+)$/);if(matc
 $('.skip-link').addEventListener('click',e=>{e.preventDefault();const target=school.active?$('#school-title'):$('#chapter-title');target.focus();target.scrollIntoView({block:'start'});});
 window.addEventListener('hashchange',fromHash);fromHash();celebration.sync({automatic:true});
 setInterval(()=>{const seconds=Math.floor((performance.now()-started)/1000);$('#timer').textContent='Tempo decorrido: '+Math.floor(seconds/60)+'min '+String(seconds%60).padStart(2,'0')+'s · estimativa total: '+chapters.reduce((a,c)=>a+c.time,0)+' min';},1000);
-window.addEventListener('pagehide',()=>{celebration.dispose();stage.dispose();mascot.dispose();cancelAnimationFrame(fallbackFrame);},{once:true});
+window.addEventListener('pagehide',()=>{audioPanel.dispose();audio.dispose();celebration.dispose();stage.dispose();mascot.dispose();cancelAnimationFrame(fallbackFrame);},{once:true});

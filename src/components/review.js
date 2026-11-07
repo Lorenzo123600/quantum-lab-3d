@@ -1,3 +1,4 @@
+import {soundFeedback} from '../utils/audio-events.js';
 import { reviews } from '../content/review.js';
 import { icon } from './icons.js';
 import { mascotFeedback } from './mascot.js';
@@ -17,6 +18,7 @@ export function mountReview(host, index, progress, onComplete) {
       b.setAttribute('aria-pressed','true');b.classList.add('selected',i===answer?'correct':'incorrect');
       options.children[answer].classList.add('correct');feedback.hidden=false;feedback.className='review-feedback '+(i===answer?'success':'retry');
       feedback.textContent=(i===answer?'✓ Isso mesmo! ':'↻ Vamos entender: ')+explanation;completedState();
+      soundFeedback(i===answer?'correct':'incorrect');
       mascotFeedback(i===answer?'happy':'curious',i===answer?'Boa! Sua explicação combina com as evidências.':'Quase! Vamos analisar a explicação e tentar de novo, sem perder pontos.');
     });options.append(b);
   });
