@@ -7,6 +7,8 @@ import './styles/quantum-ui.css';
 import './styles/quantum-v3.css';
 import './styles/school.css';
 import './styles/brand.css';
+import './styles/maximum-achievement.css';
+import { MaximumCelebration } from './components/maximum-celebration.js';
 import 'katex/dist/katex.min.css';
 import katex from 'katex';
 import { chapters } from './content/chapters.js';
@@ -32,7 +34,7 @@ document.querySelector('#app').innerHTML=`
   <header class="topbar">
     <a class="brand" href="#inicio" aria-label="Lorenzo's Physics, início">${physicsEmblem()}<small>${schoolWork.title}</small></a>
     <nav class="toolbar" aria-label="Ferramentas da apresentação">
-      <span class="xp-counter" title="Pontos simbólicos, sem competição">${icon('spark')}<span id="xp-count">0 XP</span></span>
+      <button id="achievements-button" class="xp-counter" title="Ver conquistas" aria-label="Ver conquistas">${icon('spark')}<span id="xp-count">0 XP</span></button>
       <button id="menu-button" aria-label="Abrir trilha de capítulos" aria-expanded="false" aria-controls="chapter-menu">${icon('trail')} <span>Trilha</span></button>
       <button id="notes-button" aria-label="Notas do apresentador" aria-expanded="false" aria-controls="presenter-notes">${icon('book')} <span>Apresentador</span></button>
       <button id="fullscreen" aria-label="Alternar tela cheia">${icon('fullscreen')}</button>
@@ -71,7 +73,7 @@ document.querySelector('#app').innerHTML=`
     <div class="progress-track"><div id="progress"></div></div>
     <div class="navigation-buttons"><button id="previous" aria-label="Capítulo anterior">← <span>Anterior</span></button><button id="next"><span>Próximo</span> →</button></div>
   </footer>
-  <dialog id="chapter-menu" aria-labelledby="trail-title"><div class="dialog-heading"><span class="section-label">${icon('trail')} SUA JORNADA</span><button data-close="chapter-menu" aria-label="Fechar menu">${icon('close')}</button></div><div class="trail-layout"><div class="trail-intro"><div class="trail-art">${icon('atom')}</div><h2 id="trail-title">Uma descoberta leva a outra.</h2><p>16 lições para explorar a luz, a matéria e tudo o que surpreende.</p><div class="trail-stat"><strong id="trail-count"></strong><span id="trail-xp"></span></div><p class="trail-help">Todos os capítulos estão abertos. Escolha por onde explorar!</p><button id="resume-lesson" class="primary-button">Continuar minha jornada ${icon('arrow')}</button><details class="trail-achievements"><summary>Suas conquistas</summary><div id="achievement-list"></div></details><small>Progresso salvo só neste aparelho. Sem conta, sem ranking.</small></div><div class="trail-scroll"><div id="chapter-links"></div></div></div></dialog>
+  <dialog id="chapter-menu" aria-labelledby="trail-title"><div class="dialog-heading"><span class="section-label">${icon('trail')} SUA JORNADA</span><button data-close="chapter-menu" aria-label="Fechar menu">${icon('close')}</button></div><div class="trail-layout"><div class="trail-intro"><div class="trail-art">${icon('atom')}</div><h2 id="trail-title">Uma descoberta leva a outra.</h2><p>16 lições para explorar a luz, a matéria e tudo o que surpreende.</p><div class="trail-stat"><strong id="trail-count"></strong><span id="trail-xp"></span></div><p class="trail-help">Todos os capítulos estão abertos. Escolha por onde explorar!</p><button id="resume-lesson" class="primary-button">Continuar minha jornada ${icon('arrow')}</button><details class="trail-achievements"><summary>Suas conquistas</summary><div id="achievement-list"></div><button id="maximum-achievement" hidden>🏆 Conquista quântica · 320/320</button></details><small>Progresso salvo só neste aparelho. Sem conta, sem ranking.</small></div><div class="trail-scroll"><div id="chapter-links"></div></div></div></dialog>
   <aside id="presenter-notes" class="notes-panel" hidden aria-label="Roteiro oral do capítulo"><div class="dialog-heading"><h2>Notas do apresentador</h2><button id="close-notes" aria-label="Fechar notas">✕</button></div>
     <p id="notes-chapter" class="notes-chapter"></p>
     <section class="oral-script"><h3>Para falar à turma</h3><p id="notes-text"></p></section>
@@ -98,7 +100,7 @@ document.querySelector('#app').innerHTML=`
   <div id="status" role="status" class="toast" hidden></div>
 `;
 const $=s=>document.querySelector(s);
-const audio=new AudioEffects();let experiment,investigation,index=0,started=performance.now(),lastPlot=0,fallbackFrame;
+const audio=new AudioEffects();let celebration,experiment,investigation,index=0,started=performance.now(),lastPlot=0,fallbackFrame;
 const status=message=>{const el=$('#status');el.textContent=message;el.hidden=false;clearTimeout(status.timeout);status.timeout=setTimeout(()=>el.hidden=true,6000);};
 let storage;try{storage=window.localStorage;}catch{}
 const progress=new LearningProgress(storage,change=>{
@@ -109,6 +111,7 @@ const progress=new LearningProgress(storage,change=>{
   status('✓ Lição concluída! +20 XP simbólicos.'+(change.newBadge?' Conquista: '+change.newBadge.name+'.':'')+(!change.saved?' O navegador não permitiu salvar; o progresso vale nesta sessão.':''));
   audio.play(760);
   mascotFeedback('celebrate','Você concluiu uma lição! Relembre a ideia principal antes de seguir.');
+  celebration?.sync({automatic:true});
 });
 const mascot=new QuantumMascot($('#quantico'),storage);$('#mascot-enabled').checked=mascot.enabled;
 const stage=new Stage($('#stage'),q=>$('#quality').value=q,status);
@@ -119,6 +122,9 @@ const school=new SchoolPresentation($('#school-screen'),{
 });
 const plot=new Plot($('#plot'));
 const trail=new LearningTrail($('#chapter-links'),chapters,learning,progress,i=>{go(i);$('#chapter-menu').close();});
+celebration=new MaximumCelebration({progress,storage,stage,mascotEnabled:()=>mascot.enabled,onVisibility:open=>{stage.suspended=open||Boolean(document.querySelector('dialog[open]'));},returnFocus:()=>{(school.active?$('#school-title'):$('#chapter-title')).focus({preventScroll:true});}});
+$('#achievements-button').addEventListener('click',()=>{if(celebration.unlock.unlocked)celebration.open();else{$('#menu-button').click();$('.trail-achievements').open=true;}});
+$('#maximum-achievement').addEventListener('click',()=>celebration.open());
 function updateProgress(){
   const count=progress.completed.size;
   $('#xp-count').textContent=progress.xp+' XP';$('#course-count').textContent=count+' / 16';$('#course-fill').style.width=(count/16*100)+'%';
@@ -126,6 +132,8 @@ function updateProgress(){
   $('#summary-progress').textContent=count+' lições concluídas · '+progress.studied.size+' capítulos marcados como estudados · '+progress.challenges.size+' de 9 investigações concluídas · '+progress.xp+' XP simbólicos';
   $('#storage-note').textContent=progress.saved?'Seu progresso fica neste aparelho. Nenhum dado é enviado.':'O armazenamento não está disponível. Você pode usar todas as lições nesta sessão.';
   trail.update(index);
+  celebration?.sync();
+  $('#achievements-button').setAttribute('aria-label',progress.xp+' de 320 pontos. Ver conquistas');
 }
 function noteParagraphs(selector,text){
   const root=$(selector);root.replaceChildren();
@@ -186,6 +194,7 @@ function showSchool(kind,updateHash=true){
   window.scrollTo({top:0,behavior:'instant'});
 }
 function tick(dt){
+  if(celebration?.dialog.open)return;
   if(!stage.animationsPaused)experiment?.tick(dt);
   investigation?.update();
   const now=performance.now();if(now-lastPlot>80&&experiment){plot.render(index,experiment.state);lastPlot=now;}
@@ -215,7 +224,7 @@ $('#mascot-enabled').addEventListener('change',e=>{mascot.setEnabled(e.target.ch
 for(const [buttonId,dialogId] of [['menu-button','chapter-menu'],['settings-button','settings']]){
   const button=$('#'+buttonId),dialog=$('#'+dialogId);
   button.addEventListener('click',()=>{dialog.showModal();button.setAttribute('aria-expanded','true');stage.suspended=true;});
-  dialog.addEventListener('close',()=>{button.setAttribute('aria-expanded','false');stage.suspended=false;});
+  dialog.addEventListener('close',()=>{button.setAttribute('aria-expanded','false');stage.suspended=Boolean(document.querySelector('dialog[open]'));});
 }
 document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>$('#'+b.dataset.close).close()));
 function notes(){if(school.active)return;const el=$('#presenter-notes');el.hidden=!el.hidden;$('#notes-button').setAttribute('aria-expanded',String(!el.hidden));}
@@ -242,6 +251,6 @@ document.addEventListener('keydown',e=>{
 });
 function fromHash(){const match=location.hash.match(/^#capitulo-(\d+)$/);if(match)go(+match[1]-1,false);else showSchool(location.hash==='#agradecimento'?'ending':'opening',false);}
 $('.skip-link').addEventListener('click',e=>{e.preventDefault();const target=school.active?$('#school-title'):$('#chapter-title');target.focus();target.scrollIntoView({block:'start'});});
-window.addEventListener('hashchange',fromHash);fromHash();
+window.addEventListener('hashchange',fromHash);fromHash();celebration.sync({automatic:true});
 setInterval(()=>{const seconds=Math.floor((performance.now()-started)/1000);$('#timer').textContent='Tempo decorrido: '+Math.floor(seconds/60)+'min '+String(seconds%60).padStart(2,'0')+'s · estimativa total: '+chapters.reduce((a,c)=>a+c.time,0)+' min';},1000);
-window.addEventListener('pagehide',()=>{stage.dispose();mascot.dispose();cancelAnimationFrame(fallbackFrame);},{once:true});
+window.addEventListener('pagehide',()=>{celebration.dispose();stage.dispose();mascot.dispose();cancelAnimationFrame(fallbackFrame);},{once:true});

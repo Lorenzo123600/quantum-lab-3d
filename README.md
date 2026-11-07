@@ -125,3 +125,9 @@ O ambiente local da sessão de criação estava indisponível; a execução foi 
 
 ## Checklist antes da aula
 Abra o site no computador da apresentação, confirme o workflow verde e teste som (se desejado), tela cheia, câmera e o capítulo 10. Carregue a página antes da aula. Ajuste a qualidade para o equipamento. As cores luminosas e pontos pequenos podem precisar de mais brilho em projetores.
+
+### Conquista quântica de 320 pontos
+
+As 16 lições continuam valendo 20 XP cada. Somente as 16 conclusões únicas reais desbloqueiam a comemoração; valores numéricos de XP armazenados não concedem pontos. A exibição automática acontece uma vez por navegador, registrada separadamente em `quantum-maximum-achievement-v1`, sem alterar o progresso existente. Depois, clique no contador de XP ou em **Trilha → Suas conquistas → Conquista quântica** para rever a medalha.
+
+**Minha conquista** mostra um cartão PNG gerado localmente. **Compartilhar conquista** usa o compartilhamento nativo de arquivos quando disponível e oferece o download da imagem nos demais dispositivos. Nenhum dado é enviado automaticamente. A medalha reutiliza o renderizador Three.js, pausa o laboratório enquanto aberta e possui alternativa visual sem WebGL. A animação respeita movimento reduzido e não acrescenta sons automáticos.

@@ -31,6 +31,7 @@ test('every lesson can be completed with explanatory feedback and no penalties',
   await expect(page.locator('#xp-count')).toHaveText(i*20+' XP');
  }
  await expect(page.locator('.course-progress')).toHaveAttribute('aria-valuenow','16');
+ await page.locator('#achievement-continue').click();
  await page.locator('#menu-button').click();
  await expect(page.locator('.achievement.earned')).toHaveCount(4);
  await expect(page.locator('.path-item.completed')).toHaveCount(16);

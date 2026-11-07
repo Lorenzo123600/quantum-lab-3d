@@ -11,7 +11,7 @@ export class Stage {
     this.renderer.domElement.setAttribute('aria-label','Cena tridimensional. Arraste para girar e use pinça ou rolagem para aproximar.');
     this.renderer.domElement.setAttribute('role','img');
     this.renderer.domElement.addEventListener('webglcontextlost',e=>{e.preventDefault();this.lost=true;onStatus('Contexto WebGL interrompido. Aguardando restauração…');});
-    this.renderer.domElement.addEventListener('webglcontextrestored',()=>{this.lost=false;this.setChapter(this.index,this.state);onStatus('Renderização 3D restaurada.');});
+    this.renderer.domElement.addEventListener('webglcontextrestored',()=>{this.lost=false;if(!this.overlay)this.setChapter(this.index,this.state);onStatus('Renderização 3D restaurada.');});
     this.scene=new THREE.Scene();this.scene.fog=new THREE.FogExp2(0x050b18,.035);
     this.camera=new THREE.PerspectiveCamera(42,1,.1,100);this.camera.position.set(6,3.5,8);
     this.controls=new OrbitControls(this.camera,this.renderer.domElement);this.controls.enableDamping=true;this.controls.dampingFactor=.06;this.controls.enablePan=false;this.controls.minDistance=3;this.controls.maxDistance=18;this.controls.maxPolarAngle=Math.PI*.88;
@@ -26,6 +26,18 @@ export class Stage {
   }
   resize(){if(!this.renderer)return;const {width,height}=this.host.getBoundingClientRect();this.renderer.setSize(width,height,false);this.camera.aspect=width/Math.max(1,height);this.camera.updateProjectionMatrix();}
   mount(host){const previous=this.host;this.host=host;if(!this.renderer)return;this.observer.unobserve(previous);host.prepend(this.renderer.domElement);this.observer.observe(host);this.resize();}
+  beginOverlay(host,createScene){
+    if(!this.renderer)return false;if(this.overlay)return true;
+    const artwork=createScene();
+    this.overlay={...artwork,restore:{host:this.host,position:this.camera.position.clone(),target:this.controls.target.clone(),min:this.controls.minDistance,max:this.controls.maxDistance,interacted:this.interacted,label:this.renderer.domElement.getAttribute('aria-label')}};
+    this.camera.position.set(0,.25,5);this.controls.target.set(0,.25,0);this.controls.minDistance=3.5;this.controls.maxDistance=7;this.controls.update();
+    this.renderer.domElement.setAttribute('aria-label','Medalha tridimensional dourada com um átomo brilhante. Arraste para girar.');this.mount(host);return true;
+  }
+  endOverlay(){
+    if(!this.overlay)return;const {restore,scene}=this.overlay;this.overlay=null;disposeTree(scene);
+    this.camera.position.copy(restore.position);this.controls.target.copy(restore.target);this.controls.minDistance=restore.min;this.controls.maxDistance=restore.max;this.interacted=restore.interacted;
+    this.renderer.domElement.setAttribute('aria-label',restore.label);this.controls.update();this.mount(restore.host);
+  }
   setQuality(q){this.quality=q;if(!this.renderer)return;this.renderer.setPixelRatio(Math.min(devicePixelRatio||1,q==='low'?1:q==='medium'?1.5:2));this.resize();if(this.state)this.setChapter(this.index,this.state);this.onQuality(q);}
   setChapter(index,state){
     this.index=index;this.state=state;if(!this.renderer)return;
@@ -35,8 +47,9 @@ export class Stage {
   }
   loop(now){
     this.frame=requestAnimationFrame(this.loop);
-    const raw=(now-this.last)/1000;this.last=now;if(document.hidden||this.lost||this.suspended)return;
+    const raw=(now-this.last)/1000;this.last=now;if(document.hidden||this.lost||(this.suspended&&!this.overlay))return;
     const dt=Math.min(raw,.05);
+    if(this.overlay){this.overlay.update(this.reduced?0:dt);this.controls.update();this.renderer.render(this.overlay.scene,this.camera);return;}
     this.onTick?.(dt);
     if(this.current&&!this.animationsPaused)this.current.update(this.reduced?0:dt);
     if(this.cinematic==='opening'&&!this.interacted&&!this.reduced&&!this.animationsPaused){if(this.camera.position.length()<12)this.camera.position.multiplyScalar(1+dt*.035);}
@@ -46,5 +59,5 @@ export class Stage {
     if(raw<.25){this.frames++;if(raw>.045)this.slow++;if(this.frames>=180){if(this.slow>80&&this.quality!=='low'){this.setQuality(this.quality==='high'?'medium':'low');this.onStatus('Qualidade ajustada para manter a fluidez.');}this.frames=0;this.slow=0;}}
   }
   resetCamera(){if(this.state)this.setChapter(this.index,this.state);}
-  dispose(){cancelAnimationFrame(this.frame);this.observer?.disconnect();this.motion.removeEventListener('change',this.onMotion);if(this.scene)disposeTree(this.scene);this.controls?.dispose();this.renderer?.dispose();}
+  dispose(){cancelAnimationFrame(this.frame);this.endOverlay();this.observer?.disconnect();this.motion.removeEventListener('change',this.onMotion);if(this.scene)disposeTree(this.scene);this.controls?.dispose();this.renderer?.dispose();}
 }
