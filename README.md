@@ -3,6 +3,9 @@
 
 Apresentação educacional 3D em português para o 3º ano do Ensino Médio. Dezesseis capítulos com Three.js/WebGL, gráficos quantitativos, simulações controláveis, quiz e modo apresentador. Aplicação estática: não usa contas, APIs de cálculo ou backend.
 
+## Uma apresentação para aprender junto
+Cada capítulo oferece uma explicação curta, um cartão colorido com a ideia principal e uma tarefa para explorar o experimento. As seções expansíveis trazem comparações, explicações dos símbolos das fórmulas e o que observar no resultado. As analogias são identificadas e seus limites são explicitados; os modelos físicos mantêm suas hipóteses e referências. Ciano, violeta, amarelo, rosa e verde dão identidade aos temas, com rótulos que também comunicam as ideias sem depender só da cor.
+
 ## Executar
 Requer Node.js 22+ e npm.
 ```sh
@@ -53,7 +56,7 @@ O build fica em `dist/`. O caminho relativo configurado no Vite permite hospedar
 2. Em **Actions → Publish to GitHub Pages → Run workflow**, execute o workflow manual.
 3. O link será informado pelo job de publicação.
 
-A publicação não é automática: o workflow de validação roda nos pushes; o de publicação é manual. O repositório está privado; GitHub Pages em repositórios privados depende do plano. Para planos sem essa opção, torne o repositório público por decisão própria ou use Vercel/Netlify.
+Depois da configuração inicial do Pages, a publicação é atualizada automaticamente quando o workflow de validação da branch main termina com sucesso. Também é possível executar a publicação manualmente. GitHub Pages é gratuito para este repositório público; em repositórios privados a disponibilidade depende do plano.
 
 ### Vercel ou Netlify
 Importe o repositório e selecione Vite. Comando de build: `npm run build`; pasta de saída: `dist`. Não há variáveis de ambiente. Nenhuma integração da Vercel é necessária para desenvolver ou executar localmente.

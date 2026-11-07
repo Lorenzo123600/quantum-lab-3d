@@ -4,9 +4,11 @@ import '@fontsource/dm-sans/700.css';
 import '@fontsource/space-grotesk/500.css';
 import '@fontsource/space-grotesk/600.css';
 import './styles/main.css';
+import './styles/classroom.css';
 import 'katex/dist/katex.min.css';
 import katex from 'katex';
 import { chapters } from './content/chapters.js';
+import { learning } from './content/learning.js';
 import { Stage } from './components/stage.js';
 import { Plot } from './components/plot.js';
 import { mountExperiment } from './simulations/controller.js';
@@ -15,7 +17,7 @@ import { AudioEffects } from './utils/audio.js';
 document.querySelector('#app').innerHTML=`
   <a class="skip-link" href="#chapter-title">Ir para conteúdo</a>
   <header class="topbar">
-    <a class="brand" href="#capitulo-1" aria-label="Quantum Lab, início"><span class="brand-icon">Q</span><span>QUANTUM <b>LAB</b><small>Luz & matéria · laboratório interativo</small></span></a>
+    <a class="brand" href="#capitulo-1" aria-label="Quantum Lab, início"><span class="brand-icon">Q</span><span>QUANTUM <b>LAB</b><small>Explore · experimente · descubra</small></span></a>
     <nav class="toolbar" aria-label="Ferramentas da apresentação">
       <button id="menu-button" aria-expanded="false" aria-controls="chapter-menu">☷ <span>Capítulos</span></button>
       <button id="notes-button" aria-expanded="false" aria-controls="presenter-notes">▤ <span>Notas</span></button>
@@ -28,15 +30,18 @@ document.querySelector('#app').innerHTML=`
       <div class="eyebrow" id="kicker"></div>
       <h1 id="chapter-title" tabindex="-1"></h1>
       <p class="lead" id="intro"></p>
+      <section class="key-card" aria-label="Ideia principal"><span id="lesson-icon" aria-hidden="true"></span><div><h2>Guarde esta ideia</h2><p id="lesson-key"></p></div></section>
       <div id="formula" class="formula"></div>
-      <details class="science-detail"><summary>Entenda a ciência</summary><p id="detail"></p></details>
+      <details class="word-guide" hidden><summary>O que significa cada símbolo?</summary><dl id="formula-words"></dl></details>
+      <details class="everyday-detail"><summary>Uma comparação para entender</summary><p id="everyday-example"></p></details>
+      <details class="science-detail"><summary>Saiba mais sobre o modelo</summary><p id="detail"></p></details>
       <span class="chapter-duration" id="duration"></span>
     </section>
     <section class="laboratory" aria-label="Laboratório interativo">
       <div class="scene-label"><span class="live-dot"></span><span id="model-label"></span></div>
       <div id="stage" class="stage"><p class="scene-hint">Arraste para orbitar <span>·</span> role ou faça pinça para ampliar</p></div>
       <canvas id="plot" class="plot" aria-label="Gráfico quantitativo da simulação" role="img" hidden></canvas>
-      <div class="control-deck"><div class="deck-heading"><span>CONTROLE DO EXPERIMENTO</span><button id="camera-reset" title="Restaurar câmera">↺ Câmera</button></div><div id="experiment"></div></div>
+      <div class="control-deck"><div class="deck-heading"><span>VAMOS EXPERIMENTAR</span><button id="camera-reset" title="Restaurar câmera">↺ Câmera</button></div><p class="experiment-task" id="lesson-action"></p><div id="experiment"></div><details class="observation"><summary>O que devemos perceber?</summary><p id="lesson-observe"></p></details></div>
     </section>
   </main>
   <footer class="navigation">
@@ -63,12 +68,19 @@ const links=$('#chapter-links');
 chapters.forEach((chapter,i)=>{const b=document.createElement('button');b.innerHTML='<span>'+String(i+1).padStart(2,'0')+'</span><strong></strong><small>'+chapter.time+' min</small>';b.querySelector('strong').textContent=chapter.title;b.addEventListener('click',()=>{go(i);$('#chapter-menu').close();$('#menu-button').setAttribute('aria-expanded','false');});links.append(b);});
 function go(n,updateHash=true){
   index=Math.max(0,Math.min(15,n));
-  experiment?.dispose();const ch=chapters[index];
-  $('#kicker').textContent=ch.kicker;$('#chapter-title').textContent=ch.title;$('#intro').textContent=ch.text;$('#detail').textContent=ch.detail;
+  experiment?.dispose();const ch=chapters[index],lesson=learning[index];
+  document.body.dataset.theme=lesson.theme;
+  $('#kicker').textContent=lesson.topic;$('#chapter-title').textContent=ch.title;$('#intro').textContent=lesson.intro;$('#detail').textContent=ch.detail;
+  $('#lesson-icon').textContent=lesson.icon;$('#lesson-key').textContent=lesson.key;
+  $('#everyday-example').textContent=lesson.example;$('#lesson-action').textContent=lesson.action;$('#lesson-observe').textContent=lesson.observe;
+  $('#formula-words').replaceChildren();
+  for(const [symbol,meaning] of lesson.words){const dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=symbol;dd.textContent=meaning;$('#formula-words').append(dt,dd);}
+  $('.word-guide').hidden=!ch.formula||!lesson.words.length;
+  for(const selector of ['.word-guide','.everyday-detail','.observation'])$(selector).open=false;
   $('#model-label').textContent=ch.kind;$('#duration').textContent='Exploração guiada · '+ch.time+' min';$('#formula').replaceChildren();
   if(ch.formula)katex.render(ch.formula,$('#formula'),{throwOnError:false,displayMode:true,output:'htmlAndMathml'});
   $('#formula').hidden=!ch.formula;
-  $('#notes-text').textContent=ch.notes;$('#support-text').textContent='Em palavras simples: '+ch.text;
+  $('#notes-text').textContent=ch.notes;$('#support-text').textContent='Para explicar à turma: '+lesson.key+' Exemplo: '+lesson.example;
   $('#chapter-counter').textContent=String(index+1).padStart(2,'0')+' / 16';
   $('#chapter-short').textContent=ch.title;$('#progress').style.width=((index+1)/16*100)+'%';
   $('#previous').disabled=index===0;$('#next').disabled=index===15;
