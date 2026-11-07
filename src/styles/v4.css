@@ -6,3 +6,5 @@
 .simple-reading #intro{display:none}.simple-reading #simple-summary[hidden]{display:block!important;font-size:calc(18px * var(--reading-scale));line-height:1.85}.simple-summary{color:#334a65}
 
 .path-owner{display:block;font-size:10px;font-weight:900;border-left:4px solid var(--owner-color);padding-left:5px;margin-top:4px;color:#354760}.presenter-header a{font-weight:900}
+
+.presenter-script section>label{min-height:44px;display:flex;align-items:center;gap:8px}.accessibility-controls .toggle-control{min-height:44px}

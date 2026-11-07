@@ -144,7 +144,7 @@ const mystery=new MysteryRoom(modalVisibility);
 $('#classroom-open').addEventListener('click',()=>{$('#chapter-menu').close();classroom.open();});
 $('#mystery-open').addEventListener('click',()=>{$('#chapter-menu').close();mystery.open();});
 window.addEventListener('physics:sound',e=>{if(e.detail?.name==='correct'&&milestones.record('correct'))milestones.render($('#milestone-list'));});
-function experimentUsed(){if(milestones.record('experiment'))milestones.render($('#milestone-list'));}
+function experimentUsed(){if(![3,4,5,6,7,8,9,10,11].includes(index)||stage.overlay)return;if(milestones.record('experiment'))milestones.render($('#milestone-list'));}
 $('#experiment').addEventListener('input',()=>{experimentUsed();waveLab?.sync();});
 $('#experiment').addEventListener('change',experimentUsed);
 $('#experiment').addEventListener('click',e=>{if(e.target.closest('button'))experimentUsed();});

@@ -39,7 +39,7 @@ test('every lesson can be completed with explanatory feedback and no penalties',
 
 test('Quantum UI has local Nunito, light surfaces and a visible 3D laboratory',async({page},testInfo)=>{
  test.setTimeout(60000);const errors=[];page.on('pageerror',e=>errors.push(e.message));
- await page.goto('/#capitulo-4');await page.evaluate(()=>document.fonts.ready);
+ await page.goto('/#capitulo-4');await expect(page.locator('#chapter-title')).toBeVisible();await page.evaluate(()=>document.fonts.ready);
  expect(await page.evaluate(()=>document.fonts.check('900 24px Nunito'))).toBeTruthy();
  expect(await page.locator('body').evaluate(el=>getComputedStyle(el).backgroundColor)).toBe('rgb(255, 255, 255)');
  await expect(page.locator('#stage canvas')).toBeVisible();
