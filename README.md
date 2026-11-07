@@ -164,3 +164,10 @@ Distribuição: Heloá (1), Rafaella (2 e 15), Maria (3 e 14), Lorenzo (4–13),
 - As seis medalhas adicionais são simbólicas: interação experimental, hipótese verificada pelas investigações, resposta correta, metade, 16 lições e 320 pontos. Não acrescentam XP. As quatro conquistas anteriores e a comemoração de 320 permanecem.
 
 As animações e a qualidade adaptativa do Stage continuam em uso, sem renderizadores adicionais. A rota de roteiro é carregada sob demanda. Não são garantidos desempenhos específicos em modelos físicos de aparelhos que não estejam disponíveis para teste; testes móveis usam emulação de layout e toque no Chromium. Não há login, backend, serviços pagos ou dependências novas.
+
+
+### Se o áudio ficar sem som no celular
+
+Abra o botão 🔊 e use **Ativar música e efeitos**. Esse botão ativa os dois canais e libera o contexto no próprio clique/toque, mantendo os volumes escolhidos (um volume em zero volta a 100% nessa ação explícita). **Testar som** toca uma sequência curta quando os efeitos estão habilitados. Em caso de silêncio, confira o volume de mídia e a saída de áudio/Bluetooth do aparelho. Os controles individuais continuam disponíveis e o padrão de sala de aula continua desligado.
+
+O desbloqueio usa `click`, `touchend` e teclado, em vez de depender do início do toque. Um `resume()` pendente pode ser repetido durante um novo gesto sem criar outro contexto ou outra trilha. O botão de retomar permite tentar novamente após falhas transitórias. Testes incluem esse bloqueio simulado e medição de sinal no grafo Web Audio real.

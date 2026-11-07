@@ -38,3 +38,11 @@ test('background pauses scheduling and context; returning resumes only opted-in 
 test('unsupported contexts and denied storage never break the application',async()=>{
  const audio=new AudioManager({storage:{getItem(){throw Error('denied');},setItem(){throw Error('denied');}},contextFactory(){throw Error('unsupported');}});audio.setPreference('music',true);assert.equal(await audio.interact(),false);assert.equal(audio.unavailable,true);assert.equal(audio.effect('click'),false);audio.dispose();
 });
+
+
+test('a pending early resume can be retried inside a later gesture without duplicate music',async()=>{
+ const context=fakeContext();let resolveEarly;context.resume=function(){this.resumeCalls++;if(this.resumeCalls===1)return new Promise(resolve=>resolveEarly=resolve);this.state='running';resolveEarly();return Promise.resolve();};
+ let created=0;const audio=new AudioManager({contextFactory:()=>{created++;return context;}});audio.setPreference('music',true);
+ const early=audio.interact();assert.equal(context.state,'suspended');assert.equal(context.resumeCalls,1);
+ const later=audio.interact();assert.equal(context.resumeCalls,2);assert.equal(await early,true);assert.equal(await later,true);assert.equal(created,1);assert.ok(audio.musicTimer);assert.equal(audio.voices.size,7);audio.dispose();
+});

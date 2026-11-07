@@ -35,9 +35,19 @@ export class AudioManager {
   if(!this.audible){this.suspend();}else if(this.interacted)this.activate();
   this.notify();
  }
- interact(){this.interacted=true;return this.activate();}
+ interact(){
+  this.interacted=true;
+  // Mobile browsers may leave an early resume pending until a *completed*
+  // trusted gesture. Retry synchronously in that gesture, even when activate()
+  // is already waiting. Reuse the context and its one music scheduler.
+  if(!this.disposed&&this.audible&&!this.hidden()&&this.context&&this.context.state!=='running'){
+   try{this.context.resume().catch(()=>{this.unavailable=true;this.notify();});}catch{this.unavailable=true;this.notify();}
+  }
+  return this.activate();
+ }
  async activate(){
   if(this.disposed||!this.interacted||this.hidden()||(!this.audible))return false;
+  if(this.context?.state==='running'){if(this.preferences.music)this.startMusic();return true;}
   if(this.activating)return this.activating;
   this.activating=this.startContext();try{return await this.activating;}finally{this.activating=null;}
  }

@@ -8,6 +8,7 @@ async function probe(page){await page.addInitScript(()=>{
   constructor(...args){super(...args);window.audioProbe.contexts.push(this);}
   createOscillator(){const node=super.createOscillator();const set=node.frequency.setValueAtTime.bind(node.frequency);node.frequency.setValueAtTime=(value,time)=>{node.__frequency=value;return set(value,time);};window.audioProbe.oscillators.push(node);return node;}
   createGain(){const node=super.createGain();window.audioProbe.gains.push(node);return node;}
+  createDynamicsCompressor(){const node=super.createDynamicsCompressor();this.outputProbe=this.createAnalyser();this.outputProbe.fftSize=2048;node.connect(this.outputProbe);return node;}
  };
 });}
 async function openAudio(page){await page.locator('#audio-button').click();await expect(page.locator('#audio-panel')).toBeVisible();}
@@ -89,4 +90,17 @@ test('original synthesis renders a smooth bounded score without external audio',
  for(const clip of Object.values(result)){expect(clip.peak).toBeGreaterThan(.005);expect(clip.peak).toBeLessThan(.5);expect(clip.rms).toBeGreaterThan(.0001);}
  expect(result.victory.end).toBeLessThan(.00001);for(const rms of result.ambient.joins)expect(rms).toBeGreaterThan(.0001);
  const samples=result.victory.samples,bytes=Buffer.alloc(44+samples.length*2);bytes.write('RIFF',0);bytes.writeUInt32LE(bytes.length-8,4);bytes.write('WAVEfmt ',8);bytes.writeUInt32LE(16,16);bytes.writeUInt16LE(1,20);bytes.writeUInt16LE(1,22);bytes.writeUInt32LE(result.victory.rate,24);bytes.writeUInt32LE(result.victory.rate*2,28);bytes.writeUInt16LE(2,32);bytes.writeUInt16LE(16,34);bytes.write('data',36);bytes.writeUInt32LE(samples.length*2,40);samples.forEach((sample,i)=>bytes.writeInt16LE(Math.round(Math.max(-1,Math.min(1,sample))*32767),44+i*2));await writeFile(testInfo.outputPath('original-victory.wav'),bytes);
+});
+
+
+test('explicit activation produces a real output signal for music and effects, including touch',async({page},testInfo)=>{
+ await probe(page);await page.goto('/#capitulo-4');await openAudio(page);
+ if(testInfo.project.name==='mobile')await page.locator('#audio-enable').tap();else await page.locator('#audio-enable').click();
+ await waitRunning(page);await expect(page.locator('#audio-music')).toBeChecked();await expect(page.locator('#audio-effects')).toBeChecked();
+ const rms=()=>page.evaluate(()=>{const analyser=window.audioProbe.contexts[0].outputProbe,data=new Float32Array(analyser.fftSize);analyser.getFloatTimeDomainData(data);return Math.sqrt(data.reduce((sum,x)=>sum+x*x,0)/data.length);});
+ await page.locator('#audio-effects').uncheck();await expect.poll(rms).toBeGreaterThan(.00005);
+ await page.locator('#audio-effects').check();await page.locator('#audio-music').uncheck();
+ await expect.poll(rms,{timeout:5000}).toBeLessThan(.00001);
+ await page.locator('#audio-test').click();await expect.poll(rms).toBeGreaterThan(.00005);await expect(page.locator('#audio-status')).toContainText('Teste reproduzido');
+ expect(await page.evaluate(()=>window.audioProbe.contexts.length)).toBe(1);
 });
