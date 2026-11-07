@@ -8,6 +8,16 @@ A interface usa fundos claros, Nunito local, cartões temáticos e botões com p
 
 O design system e as referências consultadas estão em [docs/QUANTUM_UI.md](docs/QUANTUM_UI.md). Os ícones são originais e nenhuma fonte, mascote ou ilustração proprietária foi copiada. A estrutura científica, os parâmetros e as fórmulas das simulações foram preservados.
 
+## Atualização 3.0
+- **Estudar este capítulo** abre, em cada uma das 16 lições, introdução de 80–130 palavras, explicação de 180–300 palavras, história, pelo menos dois exemplos, curiosidade, resumo e referências. As fórmulas têm símbolos, unidades e exemplos resolvidos quando apropriado. O texto curto continua disponível para projetar.
+- **Investigue**, no laboratório, propõe uma hipótese opcional nos nove experimentos de Young a orbitais. A conclusão exige uma sequência coerente de valores reais e uma interpretação correta; clicar em qualquer controle não basta. As simulações continuam livres, sem precisar iniciar desafios.
+- **Quântico** é um mascote SVG original e fictício, dentro do cartão de conteúdo. Reage a capítulos, respostas, evidências e conclusões. Configurações permite desativar suas mensagens e animações; movimento reduzido é respeitado.
+- **Modo apresentação (P)**, em Configurações, amplia o laboratório e os títulos, reduz elementos de estudo e tenta tela cheia. Se a API não estiver disponível, o layout funciona na janela. Há pausa global, reinício do experimento, dicas de câmera e navegação livre. Os avisos científicos continuam visíveis mesmo ao ocultar dicas.
+- As notas só abrem por comando explícito e incluem fala, explicação científica, exemplos, curiosidade, demonstração, pergunta e transição. Elas ficam na mesma janela: não são uma tela privada separada do projetor.
+- Leitura é uma marcação pessoal, não uma medição automática de compreensão. Progresso de estudo e de investigações fica localmente, junto ao progresso anterior, sem alterar a pontuação de lições. Zerar o progresso limpa essas marcações também.
+
+Conteúdo ampliado: `src/content/extended.js`. Predicados dos desafios: `src/simulations/investigations.js`. Componentes de estudo, investigação e mascote ficam em `src/components/`. Os modelos matemáticos e as cenas não foram substituídos.
+
 ## Uma apresentação para aprender junto
 Cada capítulo oferece uma explicação curta, um cartão colorido com a ideia principal e uma tarefa para explorar o experimento. As seções expansíveis trazem comparações, explicações dos símbolos das fórmulas e o que observar no resultado. As analogias são identificadas e seus limites são explicitados; os modelos físicos mantêm suas hipóteses e referências. Ciano, violeta, amarelo, rosa e verde dão identidade aos temas, com rótulos que também comunicam as ideias sem depender só da cor.
 

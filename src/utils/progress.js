@@ -10,11 +10,13 @@ export const badges = [
 // Persist only validated chapter IDs. XP is derived, so revisits cannot farm points.
 export class LearningProgress {
   constructor(storage, onChange = () => {}) {
-    this.storage = storage; this.onChange = onChange; this.completed = new Set(); this.lastChapter = 0; this.saved = true;
+    this.storage = storage; this.onChange = onChange; this.completed = new Set(); this.studied=new Set();this.challenges=new Set();this.lastChapter = 0; this.saved = true;
     try {
       const value = JSON.parse(storage?.getItem(PROGRESS_KEY) || 'null');
       if (value?.version === 1) {
         for (const n of Array.isArray(value.completed) ? value.completed : []) if (Number.isInteger(n) && n >= 0 && n < 16) this.completed.add(n);
+        for(const n of Array.isArray(value.studied)?value.studied:[])if(Number.isInteger(n)&&n>=0&&n<16)this.studied.add(n);
+        for(const n of Array.isArray(value.challenges)?value.challenges:[])if(Number.isInteger(n)&&n>=3&&n<=11)this.challenges.add(n);
         if (Number.isInteger(value.lastChapter) && value.lastChapter >= 0 && value.lastChapter < 16) this.lastChapter = value.lastChapter;
       }
     } catch { this.saved = false; }
@@ -22,7 +24,7 @@ export class LearningProgress {
   get xp() { return this.completed.size * XP_PER_LESSON; }
   get earnedBadges() { return badges.filter(b => this.completed.size >= b.count); }
   persist() {
-    try { this.storage?.setItem(PROGRESS_KEY, JSON.stringify({ version: 1, completed: [...this.completed], lastChapter: this.lastChapter })); this.saved = !!this.storage; }
+    try { this.storage?.setItem(PROGRESS_KEY, JSON.stringify({ version: 1, completed: [...this.completed], studied:[...this.studied],challenges:[...this.challenges], lastChapter: this.lastChapter })); this.saved = !!this.storage; }
     catch { this.saved = false; }
   }
   visit(index) { if (!Number.isInteger(index) || index < 0 || index > 15) return; this.lastChapter = index; this.persist(); }
@@ -33,5 +35,7 @@ export class LearningProgress {
     this.onChange({ index, xp: this.xp, newBadge: this.earnedBadges[previousBadges], saved: this.saved });
     return true;
   }
-  clear() { this.completed.clear(); this.lastChapter = 0; this.persist(); this.onChange({ reset: true, xp: 0, saved: this.saved }); }
+  markStudied(index){if(!Number.isInteger(index)||index<0||index>15||this.studied.has(index))return false;this.studied.add(index);this.persist();this.onChange({reading:true,index,saved:this.saved});return true;}
+  completeChallenge(index){if(!Number.isInteger(index)||index<3||index>11||this.challenges.has(index))return false;this.challenges.add(index);this.persist();this.onChange({challenge:true,index,saved:this.saved});return true;}
+  clear() { this.completed.clear();this.studied.clear();this.challenges.clear(); this.lastChapter = 0; this.persist(); this.onChange({ reset: true, xp: 0, saved: this.saved }); }
 }

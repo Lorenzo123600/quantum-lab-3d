@@ -2,6 +2,7 @@ import { slider, button, choices, toggle } from '../components/controls.js';
 import { photonEV, photoelectric, METALS, fringeSpacing, transition, deBroglie, gaussianUncertainty, H, ME, E_CHARGE, braggIntensity } from '../physics/models.js';
 import { ElectronExperiment } from './electrons.js';
 import { timeline, technologies, quiz, references } from '../content/chapters.js';
+import { mascotFeedback } from '../components/mascot.js';
 
 export function mountExperiment(index, root, { onNavigate, onSound, onComplete = () => {} }) {
   const state = { index, paused:false, mode:'quantum', lambda:550, d:.25, L:1.8, fronts:true, frequency:700, intensity:50, metal:'cesio', level:1, momentum:1, voltage:54, theta:50, sigma:.8, orbital:'1s', opacity:.65, event:0, tech:0 };
@@ -83,6 +84,7 @@ export function mountExperiment(index, root, { onNavigate, onSound, onComplete =
         const p=document.createElement('h3');p.className='quiz-result';p.textContent='Resultado: '+score+' / 10';controls.append(p);
         read(score>=8?'Excelente compreensão. Revise as explicações e continue explorando.':'Revise os capítulos e tente novamente. Cada erro revela uma oportunidade de aprender.');
         onComplete();
+        mascotFeedback('celebrate','Quiz finalizado! Use as explicações para revisar e compartilhar o que aprendeu.');
         button(controls,'Refazer quiz',()=>{quizIndex=0;score=0;showQuiz();});return;
       }
       const progress=document.createElement('div');progress.className='quiz-progress';progress.innerHTML='<span>PERGUNTA '+(quizIndex+1)+' DE 10</span><div><span style="width:'+quizIndex*10+'%"></span></div>';controls.append(progress);
@@ -94,6 +96,7 @@ export function mountExperiment(index, root, { onNavigate, onSound, onComplete =
         read((correct?'Correto! ':'Resposta correta: '+q[1][q[2]]+'. ')+q[3]);
         button(controls,quizIndex===9?'Ver resultado →':'Próxima pergunta →',()=>{quizIndex++;showQuiz();},true);
         onSound(correct?720:220);
+        mascotFeedback(correct?'happy':'curious',correct?'Boa! Você conectou a ideia ao fenômeno.':'Vamos analisar o resultado. A explicação ajuda a encontrar a resposta.');
       }));
       [...answers.children].forEach((b,i)=>{b.dataset.letter='ABCD'[i];b.setAttribute('aria-pressed','false');});
       read('Questão '+(quizIndex+1)+' / 10 · pontuação '+score);
