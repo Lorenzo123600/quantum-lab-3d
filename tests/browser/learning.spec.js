@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 
 test('each chapter teaches a key idea, an example and an experiment observation',async({page})=>{
   test.setTimeout(60000);
-  await page.goto('/');
+  await page.goto('/#capitulo-1');
   for(let chapter=1;chapter<=16;chapter++){
     await page.evaluate(n=>location.hash='capitulo-'+n,chapter);
     await expect(page.locator('#chapter-counter')).toHaveText(String(chapter).padStart(2,'0')+' / 16');
@@ -26,7 +26,7 @@ test('each chapter teaches a key idea, an example and an experiment observation'
 test('oral notes cover all chapters while long explanations stay off the main screen',async({page})=>{
   test.setTimeout(60000);
   const errors=[];page.on('pageerror',error=>errors.push(error.message));
-  await page.goto('/');
+  await page.goto('/#capitulo-1');
   await page.locator('#notes-button').click();
   for(let chapter=1;chapter<=16;chapter++){
     await page.evaluate(n=>location.hash='capitulo-'+n,chapter);

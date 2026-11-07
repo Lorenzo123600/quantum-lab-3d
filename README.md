@@ -1,6 +1,15 @@
 # QUANTUM LAB
 **A natureza surpreendente da luz e da matéria.**
 
+## Trabalho escolar: abertura e agradecimento
+Título oficial: **Trabalho sobre física quântica**. Disciplina: Física. Turma: 3º ano do Ensino Médio. Ano: 2026. Integrantes: **Lorenzo, Maria, Rafaella, Heloisa e Heloísa**. Heloisa e Heloísa são duas integrantes distintas. A identidade técnica da plataforma continua sendo Quantum Lab.
+
+O endereço inicial e `#inicio` mostram a abertura. **Pular animação** revela imediatamente os elementos; **INICIAR APRESENTAÇÃO**, espaço, Enter ou seta direita iniciam o capítulo 1. Os links `#capitulo-1` a `#capitulo-16` continuam entrando diretamente nas lições, sem obrigar a assistir à abertura. A abertura e o agradecimento não contam como capítulos ou recompensas.
+
+Depois do capítulo 16, **Encerrar** ou seta direita/espaço abre `#agradecimento`. A seta esquerda retorna ao capítulo 16. A tela final nunca reinicia sozinha: seus botões voltam à abertura, abrem a trilha ou levam à dupla fenda de Young. A apresentação pode incluir todas essas telas em sequência; notas e controles científicos permanecem disponíveis nos capítulos.
+
+O mesmo renderizador WebGL é movido entre laboratório e telas escolares. A cena anterior é descartada na troca. O átomo da abertura é artístico; a onda e os pontos do agradecimento são uma metáfora. Sem WebGL, uma ilustração vetorial permite continuar navegando. Animações curtas respeitam movimento reduzido. A identificação dos integrantes fica centralizada em `src/content/school.js`.
+
 Apresentação educacional 3D em português para o 3º ano do Ensino Médio. Dezesseis capítulos com Three.js/WebGL, gráficos quantitativos, simulações controláveis, quiz e modo apresentador. Aplicação estática: não usa contas, APIs de cálculo ou backend.
 
 ## Quantum UI: aprender, experimentar e conferir

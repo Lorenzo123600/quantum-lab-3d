@@ -21,7 +21,7 @@ test('progress rewards effort, survives reload and never locks the trail',async(
 });
 
 test('every lesson can be completed with explanatory feedback and no penalties',async({page})=>{
- test.setTimeout(90000);await page.goto('/');
+ test.setTimeout(90000);await page.goto('/#capitulo-1');
  for(let i=1;i<=16;i++){
   await page.evaluate(n=>location.hash='capitulo-'+n,i);
   await expect(page.locator('#chapter-counter')).toHaveText(String(i).padStart(2,'0')+' / 16');

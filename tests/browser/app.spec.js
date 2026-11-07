@@ -1,7 +1,7 @@
 import {test,expect} from '@playwright/test';
 test('all chapters render with no console or page errors',async({page})=>{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error'&&!m.text().includes('fonts.googleapis'))errors.push(m.text());});
- await page.goto('/');await expect(page.locator('#chapter-title')).toContainText('Dualidade');
+ await page.goto('/#capitulo-1');await expect(page.locator('#chapter-title')).toContainText('Dualidade');
  for(let i=1;i<=16;i++){
   await page.evaluate(n=>{location.hash='capitulo-'+n;},i);
   await expect(page.locator('#chapter-counter')).toHaveText(String(i).padStart(2,'0')+' / 16');
@@ -37,7 +37,7 @@ test('quiz completes, gives explanations and can restart',async({page})=>{
  await page.getByRole('button',{name:'Refazer quiz'}).click();await expect(page.locator('#experiment h3')).toContainText('1.');
 });
 test('keyboard, chapter menu, notes and restored interface',async({page})=>{
- await page.goto('/');await page.locator('body').click({position:{x:2,y:100}});
+ await page.goto('/#capitulo-1');await page.locator('body').click({position:{x:2,y:100}});
  await page.keyboard.press('ArrowRight');await expect(page.locator('#chapter-counter')).toHaveText('02 / 16');
  await page.keyboard.press('Space');await expect(page.locator('#chapter-counter')).toHaveText('03 / 16');
  await page.keyboard.press('n');await expect(page.locator('#presenter-notes')).toBeVisible();
@@ -54,7 +54,7 @@ test('range arrows do not navigate away',async({page})=>{
 test('exercise ranges, selects, toggles, pause, reset and camera in every experiment',async({page})=>{
  test.setTimeout(90000);
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
- await page.goto('/');
+ await page.goto('/#capitulo-1');
  for(let chapter=2;chapter<=14;chapter++){
   await page.evaluate(n=>location.hash='capitulo-'+n,chapter);
   await expect(page.locator('#chapter-counter')).toHaveText(String(chapter).padStart(2,'0')+' / 16');
@@ -87,7 +87,7 @@ test('exercise ranges, selects, toggles, pause, reset and camera in every experi
  expect(errors).toEqual([]);
 });
 test('touch navigation and camera gestures retain a functional scene',async({page},testInfo)=>{
- await page.goto('/');
+ await page.goto('/#capitulo-1');
  await page.getByRole('button',{name:'Iniciar exploração →',exact:true}).click();
  await expect(page.locator('#chapter-counter')).toHaveText('02 / 16');
  await page.locator('#previous').click();await page.locator('#next').click();

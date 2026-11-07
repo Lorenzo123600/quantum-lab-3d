@@ -82,6 +82,7 @@ export function buildScene(index,state,quality) {
     else {
       const data=new Float32Array(900*3), targets=new Float32Array(900*3);
       for(let i=0;i<900;i++){targets[i*3]=(Math.random()-.5)*6;targets[i*3+1]=(Math.random()-.5)*3;targets[i*3+2]=Math.random()*.15;}
+      if(state.schoolClosing)for(let i=0;i<900;i++){const angle=i/900*Math.PI*2,radius=2.4+Math.random()*.7;targets[i*3]=Math.cos(angle)*radius;targets[i*3+1]=Math.sin(angle)*radius;}
       const detections=points(group,data,CYAN,.045,.9);
       const w=wave(group,[0,0,0],VIOLET);
       updater=t=>{

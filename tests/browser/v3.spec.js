@@ -1,7 +1,7 @@
 import {test,expect} from '@playwright/test';
 
 test('all chapters expose rich reading, examples, curiosity, history and a complete presenter script',async({page},testInfo)=>{
- test.setTimeout(120000);const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('/');
+ test.setTimeout(120000);const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('/#capitulo-1');
  for(let chapter=1;chapter<=16;chapter++){
   await page.evaluate(n=>location.hash='capitulo-'+n,chapter);await expect(page.locator('#chapter-counter')).toHaveText(String(chapter).padStart(2,'0')+' / 16');
   await page.locator('#full-lesson>summary').click();

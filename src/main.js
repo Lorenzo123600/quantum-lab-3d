@@ -5,6 +5,7 @@ import '@fontsource/nunito/800.css';
 import '@fontsource/nunito/900.css';
 import './styles/quantum-ui.css';
 import './styles/quantum-v3.css';
+import './styles/school.css';
 import 'katex/dist/katex.min.css';
 import katex from 'katex';
 import { chapters } from './content/chapters.js';
@@ -21,11 +22,13 @@ import { extendedLessons } from './content/extended.js';
 import { mountStudy } from './components/study.js';
 import { QuantumMascot, mascotFeedback } from './components/mascot.js';
 import { mountInvestigation } from './components/investigation.js';
+import { schoolWork } from './content/school.js';
+import { SchoolPresentation } from './components/school-presentation.js';
 
 document.querySelector('#app').innerHTML=`
   <a class="skip-link" href="#chapter-title">Ir para conteúdo</a>
   <header class="topbar">
-    <a class="brand" href="#capitulo-1" aria-label="Quantum Lab, início"><span class="brand-icon">${icon('atom')}</span><span>quantum<span class="brand-lab">lab</span><small>Pequenas perguntas. Grandes descobertas.</small></span></a>
+    <a class="brand" href="#inicio" aria-label="Quantum Lab, início"><span class="brand-icon">${icon('atom')}</span><span>quantum<span class="brand-lab">lab</span><small>${schoolWork.title}</small></span></a>
     <nav class="toolbar" aria-label="Ferramentas da apresentação">
       <span class="xp-counter" title="Pontos simbólicos, sem competição">${icon('spark')}<span id="xp-count">0 XP</span></span>
       <button id="menu-button" aria-label="Abrir trilha de capítulos" aria-expanded="false" aria-controls="chapter-menu">${icon('trail')} <span>Trilha</span></button>
@@ -34,6 +37,7 @@ document.querySelector('#app').innerHTML=`
       <button id="settings-button" aria-expanded="false" aria-controls="settings" aria-label="Configurações">${icon('gear')}</button>
     </nav>
   </header>
+  <section id="school-screen" class="school-screen" aria-labelledby="school-title" hidden></section>
   <div class="presentation-tools" hidden><strong>Modo apresentação</strong><label class="toggle-control"><input id="pause-all" type="checkbox">Pausar animações</label><label class="toggle-control"><input id="camera-captions" type="checkbox" checked>Dicas da câmera</label><button id="restart-current">Reiniciar experimento atual</button><button id="leave-presentation">Sair da apresentação</button></div>
   <div class="course-bar"><span id="course-status">Sua jornada está começando</span><div class="course-progress" role="progressbar" aria-label="Lições concluídas" aria-valuemin="0" aria-valuemax="16" aria-valuenow="0"><span id="course-fill"></span></div><strong id="course-count">0 / 16</strong></div>
   <nav class="lesson-steps" aria-label="Etapas da lição"><button data-jump="chapter-title"><span>1</span> Entenda</button><span class="step-line"></span><button data-jump="laboratory"><span>2</span> Experimente</button><span class="step-line"></span><button data-jump="lesson-review"><span>3</span> Confira</button></nav>
@@ -106,6 +110,11 @@ const progress=new LearningProgress(storage,change=>{
 });
 const mascot=new QuantumMascot($('#quantico'),storage);$('#mascot-enabled').checked=mascot.enabled;
 const stage=new Stage($('#stage'),q=>$('#quality').value=q,status);
+const school=new SchoolPresentation($('#school-screen'),{
+  onStart:()=>go(0),onOpening:()=>showSchool('opening'),
+  onChapters:()=>$('#menu-button').click(),onExperiments:()=>{go(3);$('#laboratory').scrollIntoView({block:'start'});},
+  onSkip:()=>{stage.interacted=true;},
+});
 const plot=new Plot($('#plot'));
 const trail=new LearningTrail($('#chapter-links'),chapters,learning,progress,i=>{go(i);$('#chapter-menu').close();});
 function updateProgress(){
@@ -121,6 +130,7 @@ function noteParagraphs(selector,text){
   for(const line of text.split('\n').filter(s=>s.trim())){const p=document.createElement('p');p.textContent=line.replace(/^- /,'• ');root.append(p);}
 }
 function go(n,updateHash=true){
+  school.hide();document.body.classList.remove('school-screen-active');stage.cinematic=null;stage.mount($('#stage'));
   index=Math.max(0,Math.min(15,n));
   experiment?.dispose();const ch=chapters[index],lesson=learning[index],extended=extendedLessons[index];
   document.body.dataset.theme=lesson.theme;
@@ -147,7 +157,7 @@ function go(n,updateHash=true){
   $('#presenter-notes').scrollTop=0;
   $('#chapter-counter').textContent=String(index+1).padStart(2,'0')+' / 16';
   $('#chapter-short').textContent=ch.title;$('#progress').style.width=((index+1)/16*100)+'%';
-  $('#previous').disabled=index===0;$('#next').disabled=index===15;
+  $('#previous').disabled=false;$('#next').disabled=false;$('#next').innerHTML=index===15?'<span>Encerrar</span> →':'<span>Próximo</span> →';$('#next').setAttribute('aria-label',index===15?'Ir para o agradecimento final':'Próximo capítulo');
   progress.visit(index);updateProgress();
   mountReview($('#lesson-review'),index,progress,i=>progress.complete(i));
   mountStudy($('#study-content'),index,progress,i=>progress.markStudied(i));
@@ -155,12 +165,23 @@ function go(n,updateHash=true){
   experiment=mountExperiment(index,$('#experiment'),{onNavigate:go,onSound:f=>audio.play(f),onComplete:()=>progress.complete(index)});
   investigation=mountInvestigation($('#investigation'),index,()=>experiment.state,progress,i=>progress.completeChallenge(i));
   stage.setChapter(index,experiment.state);plot.render(index,experiment.state);
-  document.body.dataset.chapter=index;document.title=ch.title+' · QUANTUM LAB';
+  document.body.dataset.chapter=index;document.title=ch.title+' · '+schoolWork.title;
   $('.chapter-copy').classList.remove('enter');requestAnimationFrame(()=>$('.chapter-copy').classList.add('enter'));
   if(updateHash)history.replaceState(null,'','#capitulo-'+(index+1));
   $('.science-detail').open=false;
   window.scrollTo({top:0,behavior:'instant'});
   mascot.say('curious','Vamos explorar: '+lesson.topic+'. Você pode estudar a teoria ou testar uma hipótese no laboratório.');
+}
+function showSchool(kind,updateHash=true){
+  experiment?.dispose();experiment=undefined;investigation=undefined;
+  $('#presenter-notes').hidden=true;$('#notes-button').setAttribute('aria-expanded','false');
+  document.body.classList.remove('immersive');$('#restore-ui').hidden=true;
+  document.body.classList.add('school-screen-active');school.show(kind,Boolean(stage.renderer));
+  updateProgress();
+  stage.cinematic=kind;stage.mount(school.visual);stage.setChapter(kind==='ending'?15:0,{paused:false,schoolClosing:kind==='ending'});
+  if(kind==='ending'&&stage.renderer){stage.camera.position.set(0,0,9);stage.controls.target.set(0,0,0);stage.controls.update();}
+  if(updateHash)history.replaceState(null,'',kind==='ending'?'#agradecimento':'#inicio');
+  window.scrollTo({top:0,behavior:'instant'});
 }
 function tick(dt){
   if(!stage.animationsPaused)experiment?.tick(dt);
@@ -169,7 +190,7 @@ function tick(dt){
 }
 stage.onTick=tick;
 if(!stage.renderer){let last=performance.now();const loop=now=>{if(!document.hidden)tick(Math.min((now-last)/1000,.05));last=now;fallbackFrame=requestAnimationFrame(loop);};fallbackFrame=requestAnimationFrame(loop);$('#camera-reset').disabled=true;}
-$('#next').addEventListener('click',()=>go(index+1));$('#previous').addEventListener('click',()=>go(index-1));
+$('#next').addEventListener('click',()=>index===15?showSchool('ending'):go(index+1));$('#previous').addEventListener('click',()=>index===0?showSchool('opening'):go(index-1));
 $('#camera-reset').addEventListener('click',()=>stage.resetCamera());
 async function fullscreen(){
   const button=$('#fullscreen');button.disabled=true;button.setAttribute('aria-busy','true');
@@ -187,7 +208,7 @@ async function togglePresentation(){
 $('#presentation-toggle').addEventListener('click',togglePresentation);$('#leave-presentation').addEventListener('click',togglePresentation);
 $('#pause-all').addEventListener('change',e=>{stage.animationsPaused=e.target.checked;});
 $('#camera-captions').addEventListener('change',e=>document.body.classList.toggle('no-camera-captions',!e.target.checked));
-$('#restart-current').addEventListener('click',()=>go(index));
+$('#restart-current').addEventListener('click',()=>school.active?showSchool(school.kind):go(index));
 $('#mascot-enabled').addEventListener('change',e=>{mascot.setEnabled(e.target.checked);if(e.target.checked)mascot.say('curious','Estou por aqui para ajudar a relacionar suas observações com a teoria.');});
 for(const [buttonId,dialogId] of [['menu-button','chapter-menu'],['settings-button','settings']]){
   const button=$('#'+buttonId),dialog=$('#'+dialogId);
@@ -195,27 +216,30 @@ for(const [buttonId,dialogId] of [['menu-button','chapter-menu'],['settings-butt
   dialog.addEventListener('close',()=>{button.setAttribute('aria-expanded','false');stage.suspended=false;});
 }
 document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>$('#'+b.dataset.close).close()));
-function notes(){const el=$('#presenter-notes');el.hidden=!el.hidden;$('#notes-button').setAttribute('aria-expanded',String(!el.hidden));}
+function notes(){if(school.active)return;const el=$('#presenter-notes');el.hidden=!el.hidden;$('#notes-button').setAttribute('aria-expanded',String(!el.hidden));}
 $('#notes-button').addEventListener('click',notes);$('#close-notes').addEventListener('click',notes);
 function hideUI(){const hidden=document.body.classList.toggle('immersive');$('#restore-ui').hidden=!hidden;if($('#settings').open)$('#settings').close();}
 $('#hide-ui').addEventListener('click',hideUI);$('#restore-ui').addEventListener('click',hideUI);
 $('#quality').addEventListener('change',e=>stage.setQuality(e.target.value));
 $('#sound').addEventListener('change',e=>{try{audio.setEnabled(e.target.checked);audio.play();}catch{e.target.checked=false;status('Áudio indisponível neste navegador.');}});
-$('#restart').addEventListener('click',()=>{started=performance.now();go(0);});
+$('#restart').addEventListener('click',()=>{started=performance.now();showSchool('opening');});
 $('#clear-progress').addEventListener('click',()=>{progress.clear();mountReview($('#lesson-review'),index,progress,i=>progress.complete(i));mountStudy($('#study-content'),index,progress,i=>progress.markStudied(i));investigation=mountInvestigation($('#investigation'),index,()=>experiment.state,progress,i=>progress.completeChallenge(i));});
 $('#resume-lesson').addEventListener('click',()=>{go(progress.lastChapter);$('#chapter-menu').close();});
 $('#summary-trail').addEventListener('click',()=>$('#menu-button').click());
 document.querySelectorAll('[data-jump]').forEach(b=>b.addEventListener('click',()=>{const target=$('#'+b.dataset.jump);target.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});target.focus({preventScroll:true});}));
 document.addEventListener('keydown',e=>{
   if(e.altKey||e.ctrlKey||e.metaKey||e.target.closest('input,select,textarea,button,a,summary,[contenteditable="true"]')||document.querySelector('dialog[open]'))return;
-  if(e.key==='ArrowRight'||e.code==='Space'){e.preventDefault();go(index+1);}
-  else if(e.key==='ArrowLeft'){e.preventDefault();go(index-1);}
+  if(school.active&&(e.key==='ArrowRight'||e.code==='Space'||e.key==='Enter')){e.preventDefault();if(school.kind==='opening')go(0);return;}
+  if(school.active&&e.key==='ArrowLeft'){e.preventDefault();if(school.kind==='ending')go(15);return;}
+  if(e.key==='ArrowRight'||e.code==='Space'){e.preventDefault();index===15?showSchool('ending'):go(index+1);}
+  else if(e.key==='ArrowLeft'){e.preventDefault();index===0?showSchool('opening'):go(index-1);}
   else if(e.key.toLowerCase()==='f')fullscreen();
   else if(e.key.toLowerCase()==='h')hideUI();
   else if(e.key.toLowerCase()==='n')notes();
   else if(e.key.toLowerCase()==='p')togglePresentation();
 });
-function fromHash(){const match=location.hash.match(/^#capitulo-(\d+)$/);go(match?+match[1]-1:progress.lastChapter,false);}
+function fromHash(){const match=location.hash.match(/^#capitulo-(\d+)$/);if(match)go(+match[1]-1,false);else showSchool(location.hash==='#agradecimento'?'ending':'opening',false);}
+$('.skip-link').addEventListener('click',e=>{e.preventDefault();const target=school.active?$('#school-title'):$('#chapter-title');target.focus();target.scrollIntoView({block:'start'});});
 window.addEventListener('hashchange',fromHash);fromHash();
 setInterval(()=>{const seconds=Math.floor((performance.now()-started)/1000);$('#timer').textContent='Tempo decorrido: '+Math.floor(seconds/60)+'min '+String(seconds%60).padStart(2,'0')+'s · estimativa total: '+chapters.reduce((a,c)=>a+c.time,0)+' min';},1000);
 window.addEventListener('pagehide',()=>{stage.dispose();mascot.dispose();cancelAnimationFrame(fallbackFrame);},{once:true});

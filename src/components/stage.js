@@ -25,6 +25,7 @@ export class Stage {
     this.setQuality('medium');this.resize();this.slow=0;this.frames=0;this.last=performance.now();this.loop=this.loop.bind(this);this.frame=requestAnimationFrame(this.loop);
   }
   resize(){if(!this.renderer)return;const {width,height}=this.host.getBoundingClientRect();this.renderer.setSize(width,height,false);this.camera.aspect=width/Math.max(1,height);this.camera.updateProjectionMatrix();}
+  mount(host){const previous=this.host;this.host=host;if(!this.renderer)return;this.observer.unobserve(previous);host.prepend(this.renderer.domElement);this.observer.observe(host);this.resize();}
   setQuality(q){this.quality=q;if(!this.renderer)return;this.renderer.setPixelRatio(Math.min(devicePixelRatio||1,q==='low'?1:q==='medium'?1.5:2));this.resize();if(this.state)this.setChapter(this.index,this.state);this.onQuality(q);}
   setChapter(index,state){
     this.index=index;this.state=state;if(!this.renderer)return;
@@ -38,7 +39,8 @@ export class Stage {
     const dt=Math.min(raw,.05);
     this.onTick?.(dt);
     if(this.current&&!this.animationsPaused)this.current.update(this.reduced?0:dt);
-    if(this.index===0&&!this.interacted&&!this.reduced&&!this.animationsPaused){this.camera.position.multiplyScalar(Math.max(.9995,1-dt*.007));if(this.camera.position.length()<7)this.interacted=true;}
+    if(this.cinematic==='opening'&&!this.interacted&&!this.reduced&&!this.animationsPaused){if(this.camera.position.length()<12)this.camera.position.multiplyScalar(1+dt*.035);}
+    else if(this.index===0&&!this.interacted&&!this.reduced&&!this.animationsPaused){this.camera.position.multiplyScalar(Math.max(.9995,1-dt*.007));if(this.camera.position.length()<7)this.interacted=true;}
     this.controls.update();this.renderer.render(this.scene,this.camera);
     // Adaptive quality only after enough active frames; never use background-tab delays.
     if(raw<.25){this.frames++;if(raw>.045)this.slow++;if(this.frames>=180){if(this.slow>80&&this.quality!=='low'){this.setQuality(this.quality==='high'?'medium':'low');this.onStatus('Qualidade ajustada para manter a fluidez.');}this.frames=0;this.slow=0;}}
