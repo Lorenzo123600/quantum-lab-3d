@@ -134,7 +134,7 @@ As 16 lições continuam valendo 20 XP cada. Somente as 16 conclusões únicas r
 
 ### Identidade sonora original (Web Audio API)
 
-O botão de alto-falante no cabeçalho abre controles independentes de música, efeitos e seus volumes. **Música e efeitos vêm desligados**, inclusive em sala de aula; o volume inicial da música é 15%. Preferências locais usam `lorenzos-physics-audio-v1`. Preferências já ativadas só voltam a tocar depois de uma nova interação no navegador, nunca no carregamento.
+O botão de alto-falante no cabeçalho abre controles independentes de música, efeitos e seus volumes. **Música e efeitos vêm ativados em 100%** para novos visitantes. O som começa somente após uma interação, conforme as regras dos navegadores. Preferências já salvas, inclusive áudio desligado ou volumes menores, são preservadas. Preferências locais usam `lorenzos-physics-audio-v1`. Preferências já ativadas só voltam a tocar depois de uma nova interação no navegador, nunca no carregamento.
 
 Toda a trilha e todos os efeitos são composições instrumentais originais sintetizadas pelo projeto, sem samples, músicas comerciais, arquivos de terceiros ou licenças externas. A trilha usa quatro compassos de oito segundos (Cmaj7, Am7, Fmaj7, Gsus2), com acordes suaves e notas cristalinas sobrepostas. Ataques e caudas graduais permitem repetição sem cortes. O gerenciador central mantém um único contexto e um único agendador, limita vozes simultâneas, libera os nós finalizados e pausa ao ocultar a página. Não há sons em sliders, movimentos da câmera ou emissões contínuas.
 

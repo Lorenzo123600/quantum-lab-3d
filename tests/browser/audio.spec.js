@@ -13,13 +13,13 @@ async function probe(page){await page.addInitScript(()=>{
 async function openAudio(page){await page.locator('#audio-button').click();await expect(page.locator('#audio-panel')).toBeVisible();}
 async function waitRunning(page){await expect.poll(()=>page.evaluate(()=>window.audioProbe.contexts[0]?.state)).toBe('running');}
 
-test('silent defaults, independent controls, volumes and saved opt-in require a fresh gesture',async({page},testInfo)=>{
+test('enabled 100% defaults still require a gesture and preserve independent saved controls',async({page},testInfo)=>{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));await probe(page);await page.goto('/#capitulo-4');
  expect(await page.evaluate(()=>window.audioProbe.contexts.length)).toBe(0);await openAudio(page);
- await expect(page.locator('#audio-music')).not.toBeChecked();await expect(page.locator('#audio-effects')).not.toBeChecked();await expect(page.locator('#audio-music-volume')).toHaveValue('15');await expect(page.locator('#audio-button')).toHaveAttribute('data-muted','true');
+ await expect(page.locator('#audio-music')).toBeChecked();await expect(page.locator('#audio-effects')).toBeChecked();await expect(page.locator('#audio-music-volume')).toHaveValue('100');await expect(page.locator('#audio-effects-volume')).toHaveValue('100');await expect(page.locator('#audio-button')).toHaveAttribute('data-muted','false');
  await page.screenshot({path:testInfo.outputPath('audio-panel.png')});
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBeTruthy();
- await page.locator('#audio-music').check();await waitRunning(page);await expect(page.locator('#audio-effects')).not.toBeChecked();
+ await page.locator('#audio-effects').uncheck();await waitRunning(page);await expect(page.locator('#audio-music')).toBeChecked();await expect(page.locator('#audio-effects')).not.toBeChecked();
  await page.locator('#audio-music-volume').fill('24');await expect(page.locator('#music-volume-label')).toHaveText('24%');
  await page.locator('#audio-effects').check();await page.locator('#audio-effects-volume').fill('18');
  expect(await page.evaluate(()=>window.audioProbe.contexts.length)).toBe(1);
@@ -32,7 +32,7 @@ test('silent defaults, independent controls, volumes and saved opt-in require a 
 });
 
 test('real answers produce distinct effects; sliders stay silent and the old switch stays synchronized',async({page})=>{
- await probe(page);await page.goto('/#capitulo-4');await openAudio(page);await page.locator('#audio-effects').check();await waitRunning(page);await page.locator('#close-audio').click();
+ await probe(page);await page.goto('/#capitulo-4');await openAudio(page);await page.locator('#audio-music').uncheck();await page.locator('#audio-effects').check();await waitRunning(page);await page.locator('#close-audio').click();
  await page.evaluate(()=>window.audioProbe.oscillators.length=0);
  await page.locator('.review-options button').nth(1).click();
  expect(await page.evaluate(()=>window.audioProbe.oscillators.map(n=>Math.round(n.__frequency)))).toEqual([196,175]);
@@ -54,13 +54,13 @@ test('hidden pages suspend audio; return resumes a single context and a single m
 
 test('the genuine 320-point event plays one seven-second fanfare, ducks and restores music',async({page})=>{
  test.setTimeout(45000);await probe(page);await page.addInitScript(()=>localStorage.setItem('quantum-lab-progress-v1',JSON.stringify({version:1,completed:Array.from({length:15},(_,i)=>i)})));
- await page.goto('/#capitulo-16');await openAudio(page);await page.locator('#audio-music').check();await page.locator('#audio-effects').check();await waitRunning(page);await page.locator('#close-audio').click();
+ await page.goto('/#capitulo-16');await openAudio(page);await page.locator('#audio-music').check();await page.locator('#audio-effects').check();await page.locator('#audio-music-volume').fill('100');await page.locator('#audio-music-volume').dispatchEvent('input');await waitRunning(page);await page.locator('#close-audio').click();
  await page.locator('.review-options button').first().click();await page.evaluate(()=>window.audioProbe.oscillators.length=0);await page.locator('#complete-lesson').click();
  await expect(page.locator('#maximum-celebration')).toBeVisible();await expect(page.locator('#xp-count')).toHaveText('320 XP');
  expect(await page.evaluate(()=>window.audioProbe.oscillators.length)).toBe(15);
  await expect.poll(()=>page.evaluate(()=>window.audioProbe.gains[3].gain.value)).toBeCloseTo(.18,2);
  await expect.poll(()=>page.evaluate(()=>window.audioProbe.gains[3].gain.value),{timeout:11000}).toBeCloseTo(1,2);
- expect(await page.evaluate(key=>JSON.parse(localStorage.getItem(key)).musicVolume,AUDIO_KEY)).toBe(.15);
+ expect(await page.evaluate(key=>JSON.parse(localStorage.getItem(key)).musicVolume,AUDIO_KEY)).toBe(1);
  await page.locator('#achievement-continue').click();await page.evaluate(()=>window.audioProbe.oscillators.length=0);await page.locator('#achievements-button').click();
  expect(await page.evaluate(()=>window.audioProbe.oscillators.length)).toBeLessThan(15);
 });
