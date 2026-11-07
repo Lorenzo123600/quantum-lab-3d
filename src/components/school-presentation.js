@@ -1,11 +1,13 @@
 import {schoolWork as work} from '../content/school.js';
 import {icon} from './icons.js';
+import {physicsEmblem} from './brand.js';
 
 export class SchoolPresentation {
  constructor(root,{onStart,onOpening,onChapters,onExperiments,onSkip}){
   this.root=root;this.active=false;this.kind='opening';
   root.innerHTML='<div class="school-hero"><div class="school-visual" id="school-visual"><div class="school-fallback" aria-hidden="true">'+icon('atom')+'</div></div><div class="school-copy"><p class="school-eyebrow"></p><h1 id="school-title" tabindex="-1"></h1><p class="school-subtitle"></p><div class="school-identity"><span class="school-work-label"></span><h2></h2><p class="school-classroom"></p><p class="school-presented"></p><p class="school-memberline"></p><p class="school-year"></p></div><div class="school-actions"><button id="school-start" class="primary-button">INICIAR APRESENTAÇÃO '+icon('arrow')+'</button><button id="school-home">Voltar ao início</button><button id="school-chapters">Revisar capítulos</button><button id="school-experiments">Explorar experimentos</button></div><p class="school-keyboard"></p></div><button id="skip-opening" class="school-skip">Pular animação</button><p class="school-art-note"></p></div><section class="school-team" aria-label="Integrantes do trabalho"><h2>Integrantes</h2><div class="school-member-cards"></div><p class="school-topic"></p></section>';
   this.visual=root.querySelector('#school-visual');
+  const emblem=document.createElement('div');emblem.className='school-emblem';emblem.innerHTML=physicsEmblem();root.querySelector('.school-copy').prepend(emblem);
   root.querySelector('.school-eyebrow').textContent=work.label;
   root.querySelector('.school-work-label').textContent=work.label;
   root.querySelector('.school-identity h2').textContent=work.title;

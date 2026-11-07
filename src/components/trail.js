@@ -1,9 +1,11 @@
 import { icon, lessonIcons } from './icons.js';
 import { badges } from '../utils/progress.js';
+import { physicsEmblem } from './brand.js';
 
 export class LearningTrail {
   constructor(root, chapters, learning, progress, onSelect) {
     this.root=root;this.progress=progress;this.buttons=[];
+    const brand=document.createElement('div');brand.className='trail-brand';brand.innerHTML=physicsEmblem();document.querySelector('.trail-intro').prepend(brand);
     const ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg'),path=document.createElementNS(ns,'path');
     svg.classList.add('trail-connector');svg.setAttribute('viewBox','0 0 320 1736');svg.setAttribute('aria-hidden','true');
     let d='M35 43';

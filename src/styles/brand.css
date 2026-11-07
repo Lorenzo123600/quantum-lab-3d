@@ -1,0 +1,9 @@
+.physics-emblem{display:inline-flex;align-items:center;gap:10px;font-family:'Nunito',system-ui,sans-serif;font-weight:900;line-height:1.1;letter-spacing:-.6px;white-space:nowrap}
+.brand .physics-emblem{font-size:26px;color:inherit}.brand-wordmark b{font-weight:900;color:#459c00}.brand small{font-size:9px;letter-spacing:0;margin:5px 0 0 58px}
+.brand{display:block}.brand>.physics-emblem{display:flex}.school-screen-active .brand-wordmark b{color:#9cdd60}
+.school-emblem{margin-bottom:18px;animation:school-enter .5s .15s both;color:#e8f1ff}.school-emblem .physics-emblem{font-size:18px;gap:9px;letter-spacing:-.3px}.school-emblem .brand-icon{width:33px;height:33px;border-radius:11px;background:#193455;border-color:#456e96;color:#a4e5ff}.school-emblem .brand-icon>.icon{width:25px;height:25px}.school-emblem .brand-wordmark b{color:#a5dc73}
+.school-screen[data-screen="ending"] .school-emblem{text-align:center}
+.trail-brand{margin:2px 0 17px;color:#4b4b4b}.trail-brand .physics-emblem{font-size:16px;gap:8px}.trail-brand .brand-icon{width:31px;height:31px;border-radius:10px}.trail-brand .brand-icon>.icon{width:23px;height:23px}
+@media(max-width:1100px){.brand .physics-emblem{font-size:23px}.brand small{margin-left:58px}}
+@media(max-width:760px){.brand{display:flex}.brand small{display:none}.brand .physics-emblem{font-size:18px;gap:8px;letter-spacing:-.5px}.brand .brand-wordmark{max-width:100px;white-space:normal;line-height:1.02}.brand .brand-wordmark b{display:block}.school-emblem .physics-emblem{font-size:18px}.trail-brand{margin-bottom:9px}.trail-brand .physics-emblem{font-size:14px}.trail-brand .brand-icon{width:27px;height:27px}.trail-brand .brand-icon>.icon{width:20px;height:20px}}
+@media(max-width:380px){.brand .physics-emblem{font-size:16px;gap:6px}.brand .brand-wordmark{max-width:85px}.brand .brand-icon{width:28px;height:32px}.brand .brand-icon>.icon{width:24px;height:24px}}

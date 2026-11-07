@@ -6,6 +6,7 @@ import '@fontsource/nunito/900.css';
 import './styles/quantum-ui.css';
 import './styles/quantum-v3.css';
 import './styles/school.css';
+import './styles/brand.css';
 import 'katex/dist/katex.min.css';
 import katex from 'katex';
 import { chapters } from './content/chapters.js';
@@ -24,11 +25,12 @@ import { QuantumMascot, mascotFeedback } from './components/mascot.js';
 import { mountInvestigation } from './components/investigation.js';
 import { schoolWork } from './content/school.js';
 import { SchoolPresentation } from './components/school-presentation.js';
+import { physicsEmblem } from './components/brand.js';
 
 document.querySelector('#app').innerHTML=`
   <a class="skip-link" href="#chapter-title">Ir para conteúdo</a>
   <header class="topbar">
-    <a class="brand" href="#inicio" aria-label="Quantum Lab, início"><span class="brand-icon">${icon('atom')}</span><span>quantum<span class="brand-lab">lab</span><small>${schoolWork.title}</small></span></a>
+    <a class="brand" href="#inicio" aria-label="Lorenzo's Physics, início">${physicsEmblem()}<small>${schoolWork.title}</small></a>
     <nav class="toolbar" aria-label="Ferramentas da apresentação">
       <span class="xp-counter" title="Pontos simbólicos, sem competição">${icon('spark')}<span id="xp-count">0 XP</span></span>
       <button id="menu-button" aria-label="Abrir trilha de capítulos" aria-expanded="false" aria-controls="chapter-menu">${icon('trail')} <span>Trilha</span></button>
