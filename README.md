@@ -134,8 +134,33 @@ As 16 lições continuam valendo 20 XP cada. Somente as 16 conclusões únicas r
 
 ### Identidade sonora original (Web Audio API)
 
-O botão de alto-falante no cabeçalho abre controles independentes de música, efeitos e seus volumes. **Música e efeitos vêm ativados em 100%** para novos visitantes. O som começa somente após uma interação, conforme as regras dos navegadores. Preferências já salvas, inclusive áudio desligado ou volumes menores, são preservadas. Preferências locais usam `lorenzos-physics-audio-v1`. Preferências já ativadas só voltam a tocar depois de uma nova interação no navegador, nunca no carregamento.
+O botão de alto-falante no cabeçalho abre controles independentes de música, efeitos e seus volumes. **Música e efeitos vêm desligados** para novos visitantes, conforme a configuração de sala de aula da versão 4.0. Os volumes continuam ajustáveis independentemente. O som começa somente após uma interação, conforme as regras dos navegadores. Preferências já salvas, inclusive áudio desligado ou volumes menores, são preservadas. Preferências locais usam `lorenzos-physics-audio-v1`. Preferências já ativadas só voltam a tocar depois de uma nova interação no navegador, nunca no carregamento.
 
 Toda a trilha e todos os efeitos são composições instrumentais originais sintetizadas pelo projeto, sem samples, músicas comerciais, arquivos de terceiros ou licenças externas. A trilha usa quatro compassos de oito segundos (Cmaj7, Am7, Fmaj7, Gsus2), com acordes suaves e notas cristalinas sobrepostas. Ataques e caudas graduais permitem repetição sem cortes. O gerenciador central mantém um único contexto e um único agendador, limita vozes simultâneas, libera os nós finalizados e pausa ao ocultar a página. Não há sons em sliders, movimentos da câmera ou emissões contínuas.
 
 As respostas das revisões, do quiz e das investigações emitem eventos semânticos. Conclusões de lições e conquistas usam a pontuação real existente. Ao desbloquear os 320/320 pela primeira vez, a medalha inicia uma fanfarra original de 7,2 segundos **somente se os efeitos estiverem ativados e o navegador já tiver sido desbloqueado por interação**. A música reduz suavemente de volume durante a fanfarra e depois retorna ao volume escolhido. Reabrir uma conquista não repete a fanfarra. Desativar os efeitos ou sair da página interrompe a sequência. O checkbox antigo em Configurações permanece sincronizado com os novos controles. Falhas ou ausência de Web Audio não impedem os capítulos e experimentos.
+
+
+## Lorenzo's Physics 4.0
+
+A auditoria está em [docs/4.0-auditoria.md](docs/4.0-auditoria.md). A adaptação do PDF recebido e suas correções científicas estão em [docs/caderno-revisao.md](docs/caderno-revisao.md). Os 16 capítulos e todos os textos anteriores foram preservados. Nenhuma atividade nova concede XP; o máximo permanece 320.
+
+### Modo Apresentador independente
+
+Abra **Trilha → Roteiros em outra aba** ou **Apresentador → Abrir roteiro profissional em outra aba**. Também é possível usar `?modo=apresentador#capitulo-4` após o endereço base do site. A rota é pública, não autenticação. Não inicializa o laboratório nem altera `quantum-lab-progress-v1`; a simulação na outra aba continua no mesmo estado. Nenhuma aba controla os aparelhos dos colegas.
+
+O seletor navega pelos 16 roteiros, com responsável e cor oficial. Cada roteiro contém abertura, fala completa, conceitos, demonstração, participação, pergunta com resposta oculta e transição. O tempo sugerido é ajustável de 1 a 30 minutos. O cronômetro é opcional e não avança sozinho. A+/A− ajustam a fonte; Leitura confortável amplia o espaçamento; Exibir respostas é uma escolha da aba. Checkboxes marcam tópicos e o campo de notas aceita até 6000 caracteres por capítulo. Notas, marcações, fonte e minutos ficam na chave local `physics-presenter-v4`. Use setas ou espaço fora dos campos para navegar. Os controles preservam suas teclas nativas.
+
+Distribuição: Heloá (1), Rafaella (2 e 15), Maria (3 e 14), Lorenzo (4–13), Heloísa (16).
+
+### Atividades, leituras e acessibilidade
+
+- **Trilha → Desafios D1–D5**: previsão, instruções, acesso ao experimento e reflexão. Links `#desafio-D1` até `#desafio-D5` abrem atividades específicas. Previsões são locais, opcionais e sem sincronização. Evidências das nove investigações existentes continuam sendo verificadas pelo modelo.
+- **Trilha → Sala dos Mistérios Quânticos** ou `#misterios`: seis temas opcionais, exemplos esquemáticos e reflexões sobre interpretações, sem prometer consenso onde não existe.
+- **Do caderno ao laboratório**: tópicos associados aos capítulos, em três níveis; páginas de origem e fontes da revisão. Trechos ilegíveis e os desenhos originais não foram inventados. O texto existente de Estudar este capítulo continua disponível.
+- **Configurações → Leitura e movimento**: resumo simplificado, texto maior e redução de animações persistentes. Movimento reduzido do sistema também é respeitado; áudio e mascote têm controles próprios.
+- **Restaurar parâmetros iniciais** reinicia a preparação do capítulo sem apagar XP. O roteiro da investigação identifica objetivo, hipótese, controles, procedimento, observação, explicação e reflexão.
+- Nos capítulos 11 e 12, o laboratório gaussiano 1D permite comparar ψ, |ψ|², distribuição de momento e amostras independentes. No 11, Δx acompanha o controle principal. No 12, é um estado didático distinto dos orbitais 3D. Dados são limpos quando muda a preparação, e medidas fora da janela continuam nas estatísticas. Os gráficos principais de posição e momento têm eixos separados.
+- As seis medalhas adicionais são simbólicas: interação experimental, hipótese verificada pelas investigações, resposta correta, metade, 16 lições e 320 pontos. Não acrescentam XP. As quatro conquistas anteriores e a comemoração de 320 permanecem.
+
+As animações e a qualidade adaptativa do Stage continuam em uso, sem renderizadores adicionais. A rota de roteiro é carregada sob demanda. Não são garantidos desempenhos específicos em modelos físicos de aparelhos que não estejam disponíveis para teste; testes móveis usam emulação de layout e toque no Chromium. Não há login, backend, serviços pagos ou dependências novas.
