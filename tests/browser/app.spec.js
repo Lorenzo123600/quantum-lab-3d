@@ -21,7 +21,7 @@ test('sliders, buttons and scientific state respond',async({page})=>{
  const frequency=page.locator('input[type=range]').first();await frequency.fill('300');await frequency.dispatchEvent('input');
  await expect(page.locator('.readout')).toContainText('Sem emissão');
  await frequency.fill('1500');await frequency.dispatchEvent('input');await expect(page.locator('.readout')).toContainText('Kmax');
- await page.goto('/#capitulo-10');await page.getByRole('button',{name:'Emitir 100',exact:true}).click();
+ await page.goto('/#capitulo-10');await page.getByRole('button',{name:'Emitir 100 elétrons',exact:true}).click();
  await expect(page.locator('.readout')).toContainText('100 eventos');
  await page.getByLabel('Obter informação de caminho').check();await expect(page.locator('.readout')).toContainText('0 eventos');
  await page.goto('/#capitulo-13');await page.locator('.timeline button').last().click();await expect(page.locator('.selection-detail')).toContainText('biprisma');

@@ -3,6 +3,11 @@
 
 Apresentação educacional 3D em português para o 3º ano do Ensino Médio. Dezesseis capítulos com Three.js/WebGL, gráficos quantitativos, simulações controláveis, quiz e modo apresentador. Aplicação estática: não usa contas, APIs de cálculo ou backend.
 
+## Quantum UI: aprender, experimentar e conferir
+A interface usa fundos claros, Nunito local, cartões temáticos e botões com profundidade. O laboratório mantém uma superfície escura para ondas, elétrons e orbitais. A **Trilha** reúne os 16 capítulos, todos abertos, com progresso salvo neste aparelho. Cada lição tem uma revisão curta, feedback sem punição e conclusão opcional. Concluir uma lição dá 20 XP simbólicos uma única vez; há conquistas em 1, 4, 8 e 16 lições. O quiz final também pode concluir sua lição. Não há contas, ranking ou envio de dados. Configurações permite zerar o progresso local. Reiniciar a apresentação reinicia o roteiro, sem apagar conquistas.
+
+O design system e as referências consultadas estão em [docs/QUANTUM_UI.md](docs/QUANTUM_UI.md). Os ícones são originais e nenhuma fonte, mascote ou ilustração proprietária foi copiada. A estrutura científica, os parâmetros e as fórmulas das simulações foram preservados.
+
 ## Uma apresentação para aprender junto
 Cada capítulo oferece uma explicação curta, um cartão colorido com a ideia principal e uma tarefa para explorar o experimento. As seções expansíveis trazem comparações, explicações dos símbolos das fórmulas e o que observar no resultado. As analogias são identificadas e seus limites são explicitados; os modelos físicos mantêm suas hipóteses e referências. Ciano, violeta, amarelo, rosa e verde dão identidade aos temas, com rótulos que também comunicam as ideias sem depender só da cor.
 

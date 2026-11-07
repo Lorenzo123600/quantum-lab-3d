@@ -3,7 +3,7 @@ import { photonEV, photoelectric, METALS, fringeSpacing, transition, deBroglie, 
 import { ElectronExperiment } from './electrons.js';
 import { timeline, technologies, quiz, references } from '../content/chapters.js';
 
-export function mountExperiment(index, root, { onNavigate, onSound }) {
+export function mountExperiment(index, root, { onNavigate, onSound, onComplete = () => {} }) {
   const state = { index, paused:false, mode:'quantum', lambda:550, d:.25, L:1.8, fronts:true, frequency:700, intensity:50, metal:'cesio', level:1, momentum:1, voltage:54, theta:50, sigma:.8, orbital:'1s', opacity:.65, event:0, tech:0 };
   let disposed = false, quizIndex = 0, score = 0, answered = false;
   const output = document.createElement('div'); output.className = 'readout'; output.setAttribute('role','status');
@@ -53,7 +53,7 @@ export function mountExperiment(index, root, { onNavigate, onSound }) {
   }
   if (index === 9) {
     state.electrons=new ElectronExperiment();state.electrons.clear();
-    for(const n of [1,100,1000]) button(controls,'Emitir '+n.toLocaleString('pt-BR'),()=>state.electrons.emit(n));
+    for(const n of [1,100,1000]) button(controls,'Emitir '+n.toLocaleString('pt-BR')+(n===1?' elétron':' elétrons'),()=>state.electrons.emit(n));
     toggle(controls,'Emissão contínua',false,v=>state.electrons.continuous=v);
     button(controls,'Pausar',b=>{state.electrons.paused=!state.electrons.paused;b.textContent=state.electrons.paused?'Continuar':'Pausar';});
     button(controls,'Limpar tela',()=>state.electrons.clear());
@@ -78,21 +78,24 @@ export function mountExperiment(index, root, { onNavigate, onSound }) {
   }
   if(index===14) {
     function showQuiz() {
-      controls.replaceChildren(); answered=false;
+      controls.replaceChildren(); answered=false;root.classList.add('quiz-experiment');
       if(quizIndex>=quiz.length) {
-        const p=document.createElement('h3');p.textContent='Resultado: '+score+' / 10';controls.append(p);
+        const p=document.createElement('h3');p.className='quiz-result';p.textContent='Resultado: '+score+' / 10';controls.append(p);
         read(score>=8?'Excelente compreensão. Revise as explicações e continue explorando.':'Revise os capítulos e tente novamente. Cada erro revela uma oportunidade de aprender.');
+        onComplete();
         button(controls,'Refazer quiz',()=>{quizIndex=0;score=0;showQuiz();});return;
       }
+      const progress=document.createElement('div');progress.className='quiz-progress';progress.innerHTML='<span>PERGUNTA '+(quizIndex+1)+' DE 10</span><div><span style="width:'+quizIndex*10+'%"></span></div>';controls.append(progress);
       const q=quiz[quizIndex];const title=document.createElement('h3');title.textContent=(quizIndex+1)+'. '+q[0];controls.append(title);
       const answers=document.createElement('div');answers.className='answers';controls.append(answers);
       q[1].forEach((text,i)=>button(answers,text,b=>{
         if(answered)return;answered=true;const correct=i===q[2];if(correct)score++;
-        [...answers.children].forEach((el,j)=>{el.disabled=true;el.classList.toggle('correct',j===q[2]);if(j===i&&!correct)el.classList.add('incorrect');});
+        [...answers.children].forEach((el,j)=>{el.disabled=true;el.setAttribute('aria-pressed',String(j===i));el.classList.toggle('selected',j===i);el.classList.toggle('correct',j===q[2]);if(j===i&&!correct)el.classList.add('incorrect');});
         read((correct?'Correto! ':'Resposta correta: '+q[1][q[2]]+'. ')+q[3]);
         button(controls,quizIndex===9?'Ver resultado →':'Próxima pergunta →',()=>{quizIndex++;showQuiz();},true);
         onSound(correct?720:220);
       }));
+      [...answers.children].forEach((b,i)=>{b.dataset.letter='ABCD'[i];b.setAttribute('aria-pressed','false');});
       read('Questão '+(quizIndex+1)+' / 10 · pontuação '+score);
     }
     showQuiz();
@@ -103,5 +106,5 @@ export function mountExperiment(index, root, { onNavigate, onSound }) {
     const ul=document.createElement('ul');for(const [label,url] of references){const li=document.createElement('li');if(url){const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener noreferrer';a.textContent=label;li.append(a);}else li.textContent=label;ul.append(li);}details.append(ul);controls.append(details);
     read('As visualizações são modelos; nenhum quadro é apresentado como registro experimental real.');
   }
-  return { state, tick(dt) { if(state.electrons){state.electrons.tick(dt);read((state.electrons.total||0).toLocaleString('pt-BR')+' eventos · '+(state.electrons.path?'com informação de caminho · soma incoerente':'sem informação de caminho · interferência')+' · '+state.electrons.pending+' na fila');} }, dispose(){disposed=true;root.replaceChildren();} };
+  return { state, tick(dt) { if(state.electrons){state.electrons.tick(dt);read((state.electrons.total||0).toLocaleString('pt-BR')+' eventos · '+(state.electrons.path?'com informação de caminho · soma incoerente':'sem informação de caminho · interferência')+' · '+state.electrons.pending+' na fila');} }, dispose(){disposed=true;root.replaceChildren();root.classList.remove('quiz-experiment');} };
 }

@@ -1,0 +1,19 @@
+// Low-stakes checks: every attempt unlocks explanatory feedback; no lives or penalties.
+export const reviews = [
+ ['Qual será nossa principal ferramenta nesta viagem?',['Testar ideias com experimentos','Escolher a imagem mais bonita','Decorar nomes sem observar'],0,'As evidências ajudam a decidir onde cada modelo funciona. Vamos comparar previsões e resultados.'],
+ ['Como podemos ter interferência e detecções localizadas?',['O elétron vira água','As amplitudes interferem; as detecções são pontuais','O detector precisa ter consciência'],1,'Cada evento tem posição localizada; a distribuição de muitos eventos pode revelar interferência.'],
+ ['O que deve decidir entre explicações científicas?',['A fama do cientista','A teoria mais antiga','A comparação com resultados experimentais'],2,'Newton e Huygens contribuíram muito. Experimentos posteriores mostraram limites dos modelos.'],
+ ['Se a separação d aumentar, as franjas…',['Se aproximam','Se afastam','Sempre desaparecem'],0,'Na aproximação usada, Δy ≈ λL/d. Aumentar d reduz o espaçamento.'],
+ ['Se a frequência dobrar, a energia de cada quantum…',['Cai pela metade','Dobra','Não muda'],1,'E = hf: h é constante, então energia e frequência são diretamente proporcionais.'],
+ ['Luz abaixo da frequência mínima, mas muito intensa…',['Sempre ejeta elétrons','Aumenta a energia de cada fóton','Não produz emissão no modelo ideal'],2,'Intensidade aumenta o fluxo. Cada fóton ainda precisa ter energia suficiente para vencer a função trabalho.'],
+ ['Ao descer de energia, o átomo de hidrogênio…',['Emite um fóton','Absorve um fóton','Vira uma partícula clássica'],0,'A energia do fóton emitido corresponde à diferença entre os níveis: |ΔE| = hf.'],
+ ['Ao dobrar p, o comprimento de onda…',['Dobra','Cai pela metade','Fica negativo'],1,'λ = h/p. O pequeno comprimento de onda de objetos cotidianos torna seus efeitos ondulatórios difíceis de observar.'],
+ ['Máximos de espalhamento em um cristal apoiam…',['Órbitas planetárias','A inexistência de elétrons','As propriedades ondulatórias dos elétrons'],2,'A difração observada por Davisson e Germer forneceu evidência das ondas de matéria.'],
+ ['O que remove a interferência coerente ideal?',['Informação física distinguível sobre os caminhos','Uma pessoa pensar no elétron','Emitir somente um elétron de cada vez'],0,'A interação física que torna os caminhos distinguíveis elimina o termo de interferência observado.'],
+ ['Um pacote mais localizado no espaço tem…',['Momento perfeitamente definido','Maior dispersão mínima de momentos','Menor valor obrigatório de massa'],1,'Δx Δp ≥ ℏ/2 é uma propriedade do estado, mesmo com instrumentos ideais.'],
+ ['A nuvem de pontos de um orbital representa…',['Muitos elétrons andando juntos','Uma fotografia de órbitas','Amostras de uma densidade de probabilidade'],2,'Os pontos ilustram posições possíveis segundo |ψ|². Orbital não é trajetória.'],
+ ['Como Tonomura produziu interferência com elétrons individuais?',['Com um biprisma eletrônico','Com um prisma óptico comum','Usando consciência humana'],0,'A demonstração de 1989 usou biprisma eletrônico, não duas fendas materiais.'],
+ ['Um processador comum depende de física quântica e…',['É sempre um computador quântico','Usa transistores em circuitos lógicos','Não contém semicondutores'],1,'A física quântica explica propriedades dos materiais. Isso não torna um processador convencional um computador quântico.'],
+ ['Qual é a melhor atitude depois de errar uma questão?',['Perder pontos','Desistir do capítulo','Ler a explicação e revisar a ideia'],2,'Não há punições: feedback e novas tentativas fazem parte da aprendizagem.'],
+ ['O que podemos concluir sobre luz e matéria?',['A teoria quântica descreve interferência e registros localizados','São sempre bolinhas com caminhos conhecidos','Os modelos visuais são filmagens reais'],0,'As imagens ajudam a pensar. A teoria prevê probabilidades e os experimentos testam as previsões.'],
+];

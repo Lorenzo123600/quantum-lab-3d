@@ -34,7 +34,7 @@ export class Stage {
   }
   loop(now){
     this.frame=requestAnimationFrame(this.loop);
-    const raw=(now-this.last)/1000;this.last=now;if(document.hidden||this.lost)return;
+    const raw=(now-this.last)/1000;this.last=now;if(document.hidden||this.lost||this.suspended)return;
     const dt=Math.min(raw,.05);
     this.onTick?.(dt);
     if(this.current)this.current.update(this.reduced?0:dt);
