@@ -46,6 +46,7 @@ test('Quantum UI has local Nunito, light surfaces and a visible 3D laboratory',a
  await page.locator('#notes-button').click();
  await page.screenshot({path:testInfo.outputPath('quantum-ui-presenter.png')});
  await page.locator('#close-notes').click();await page.locator('#menu-button').click();
+ await expect(page.locator('#chapter-links button').first()).toBeInViewport();
  await page.screenshot({path:testInfo.outputPath('quantum-ui-trail.png')});
  await page.locator('#chapter-links button').nth(14).click();
  await page.locator('.answers button').first().click();
