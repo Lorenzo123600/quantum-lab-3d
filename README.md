@@ -2,7 +2,7 @@
 **A natureza surpreendente da luz e da matéria.**
 
 ## Trabalho escolar: abertura e agradecimento
-Título oficial: **Trabalho sobre física quântica**. Disciplina: Física. Turma: 3º ano do Ensino Médio. Ano: 2026. Integrantes: **Lorenzo, Maria, Rafaella, Heloisa e Heloísa**. Heloisa e Heloísa são duas integrantes distintas. A identidade técnica da plataforma continua sendo Quantum Lab.
+Título oficial: **Trabalho sobre física quântica**. Disciplina: Física. Turma: 3º ano do Ensino Médio. Ano: 2026. Integrantes: **Lorenzo, Maria, Rafaella, Heloá e Heloísa**. Heloá e Heloísa são duas integrantes distintas. A identidade técnica da plataforma continua sendo Quantum Lab.
 
 O endereço inicial e `#inicio` mostram a abertura. **Pular animação** revela imediatamente os elementos; **INICIAR APRESENTAÇÃO**, espaço, Enter ou seta direita iniciam o capítulo 1. Os links `#capitulo-1` a `#capitulo-16` continuam entrando diretamente nas lições, sem obrigar a assistir à abertura. A abertura e o agradecimento não contam como capítulos ou recompensas.
 
